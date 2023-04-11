@@ -111,3 +111,6 @@ void UE::set_dist_arr(RU_entry new_dist_arr[UE_CLOSEST_RUS])
         this->dist_arr[i] = new_dist_arr[i];
     }
 }
+
+//CU METHODS//
+

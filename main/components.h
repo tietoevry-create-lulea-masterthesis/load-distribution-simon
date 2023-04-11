@@ -2,6 +2,7 @@
 #include <chrono>
 #include <map>
 #include "constants.h"
+#include <memory>
 
 class RU
 {
@@ -75,4 +76,120 @@ public:
     }
 
     void set_dist_arr(RU_entry *new_dist_arr);
+};
+
+class DU
+{
+private:
+    std::string id;
+    int bandwidth = 4000000; // default: 4 MHz
+    //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
+    //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
+
+    //float p = 3;                                            // power consumption, dependent on current traffic load, default = sleep power consumption, 3 mW or smth
+    //float p_tot = 0;                                        // total power consumption since t = 0
+    //std::chrono::_V2::system_clock::time_point last_meas_t; // time since last delta measurement of power consumption
+
+public:
+    DU();
+    DU(std::string uid, float coords[2], int antennae, int bandwidth);
+
+    const std::string get_ID();
+};
+
+class CU
+{
+private:
+    std::string id;
+    int bandwidth = 4000000; // default: 4 MHz
+    //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
+    //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
+
+    //float p = 3;                                            // power consumption, dependent on current traffic load, default = sleep power consumption, 3 mW or smth
+    //float p_tot = 0;                                        // total power consumption since t = 0
+    //std::chrono::_V2::system_clock::time_point last_meas_t; // time since last delta measurement of power consumption
+
+public:
+    CU();
+    CU(std::string uid, float coords[2], int antennae, int bandwidth);
+
+    const std::string get_ID();
+};
+
+//LINKS//
+
+class LINK_CU_DU
+{
+    private:
+        int id;
+        int rate;
+        int delay;
+        std::shared_ptr<CU> up;
+        std::shared_ptr<DU> down;
+    public:
+        LINK_CU_DU();
+        LINK_CU_DU(int id, int rate, int delay, CU* up, DU* down);
+
+        const int get_id();
+        const int get_rate();
+        const int get_delay();
+        const std::shared_ptr<CU> get_upper();
+        const std::shared_ptr<DU> get_lower();
+};
+
+class LINK_DU_RU
+{
+    private:
+        int id;
+        int rate;
+        int delay;
+        std::shared_ptr<DU> up;
+        std::shared_ptr<RU> down;
+    public:
+        LINK_DU_RU();
+        LINK_DU_RU(int id, int rate, int delay, CU* up, DU* down);
+
+        const int get_id();
+        const int get_rate();
+        const int get_delay();
+        const std::shared_ptr<DU> get_upper();
+        const std::shared_ptr<RU> get_lower();
+};
+
+class LINK_DU_DU
+{
+    private:
+        int id;
+        int rate;
+        int delay;
+        std::shared_ptr<DU> up;
+        std::shared_ptr<DU> down;
+    public:
+        LINK_DU_DU();
+        LINK_DU_DU(int id, int rate, int delay, CU* up, DU* down);
+
+        const int get_id();
+        const int get_rate();
+        const int get_delay();
+        const std::shared_ptr<DU> get_upper();
+        const std::shared_ptr<DU> get_lower();
+};
+
+class LINK_RU_RU
+{
+    private:
+        int id;
+        int rate;
+        int delay;
+        std::shared_ptr<RU> up;
+        std::shared_ptr<RU> down;
+    public:
+        LINK_RU_RU();
+        LINK_RU_RU(int id, int rate, int delay, CU* up, DU* down);
+
+        const int get_id();
+        const int get_rate();
+        const int get_delay();
+        const std::shared_ptr<RU> get_upper();
+        const std::shared_ptr<RU> get_lower();
 };
