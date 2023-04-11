@@ -149,7 +149,6 @@ void *sim_loop(void *arg)
                                 .addField("current_load", (float)sim_RUs[i].get_alloc_PRB() / (float)sim_RUs[i].get_num_PRB())
                                 .addField("p", sim_RUs[i].get_p())
                                 .addField("p_tot", sim_RUs[i].get_p_tot()));
-                                .addFielld("connections", stringify_connected_ues(i))
         }
         
 
