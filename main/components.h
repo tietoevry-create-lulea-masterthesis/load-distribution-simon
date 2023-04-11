@@ -3,6 +3,7 @@
 #include <map>
 #include "constants.h"
 #include <memory>
+#include <vector>
 
 class RU
 {
@@ -81,7 +82,7 @@ public:
 class DU
 {
 private:
-    std::string id;
+    int id;
     int bandwidth = 4000000; // default: 4 MHz
     //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
     //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
@@ -92,16 +93,20 @@ private:
 
 public:
     DU();
-    DU(std::string uid, float coords[2], int antennae, int bandwidth);
+    DU(int id, int bandwidth);
 
-    const std::string get_ID();
+    const int get_id();
 };
 
 class CU
 {
 private:
-    std::string id;
+    int id;
     int bandwidth = 4000000; // default: 4 MHz
+
+    std::vector<std::shared_ptr<LINK_ENDPOINT_CU>> upList;
+    std::vector<std::shared_ptr<LINK_CU_DU>> downList;
+
     //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
     //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
 
@@ -111,9 +116,23 @@ private:
 
 public:
     CU();
-    CU(std::string uid, float coords[2], int antennae, int bandwidth);
+    CU(int id, float coords[2], int antennae, int bandwidth);
 
-    const std::string get_ID();
+    const int get_id();
+};
+
+class ENDPOINT //Fictional node representing connection to the wider internet from CUs. 
+{
+private:
+    int connected_UEs;
+
+    std::vector<std::shared_ptr<LINK_ENDPOINT_CU>> downList;
+
+public:
+    ENDPOINT();
+    
+    const int get_connected_UE_number();
+    
 };
 
 //LINKS//
@@ -128,7 +147,7 @@ class LINK_CU_DU
         std::shared_ptr<DU> down;
     public:
         LINK_CU_DU();
-        LINK_CU_DU(int id, int rate, int delay, CU* up, DU* down);
+        LINK_CU_DU(int id, int rate, int delay, std::shared_ptr<CU> up, std::shared_ptr<DU> down);
 
         const int get_id();
         const int get_rate();
@@ -192,4 +211,23 @@ class LINK_RU_RU
         const int get_delay();
         const std::shared_ptr<RU> get_upper();
         const std::shared_ptr<RU> get_lower();
+};
+
+class LINK_ENDPOINT_CU
+{
+    private:
+        int id;
+        int rate;
+        int delay;
+        std::shared_ptr<ENDPOINT> up;
+        std::shared_ptr<CU> down;
+    public:
+        LINK_ENDPOINT_CU();
+        LINK_ENDPOINT_CU(int id, int rate, int delay, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down);
+
+        const int get_id();
+        const int get_rate();
+        const int get_delay();
+        const std::shared_ptr<ENDPOINT> get_upper();
+        const std::shared_ptr<CU> get_lower();
 };

@@ -114,3 +114,14 @@ void UE::set_dist_arr(RU_entry new_dist_arr[UE_CLOSEST_RUS])
 
 //CU METHODS//
 
+const int CU::get_id()
+{
+    return this->id;
+}
+
+//DU METHODS//
+
+const int DU::get_id()
+{
+    return this->id;
+}
