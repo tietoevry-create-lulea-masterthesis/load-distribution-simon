@@ -8,16 +8,11 @@
 class RU
 {
 private:
-    std::string uid;
-    float coords[2];         // x, y coords
-    int antennae = 4;        // default: 4T4R
+    int id;
     int bandwidth = 4000000; // default: 4 MHz
-    int num_PRB;             // number of physical resource blocks, depends on the bandwidth
-    int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
 
-    float p = 3;                                            // power consumption, dependent on current traffic load, default = sleep power consumption, 3 mW or smth
-    float p_tot = 0;                                        // total power consumption since t = 0
-    std::chrono::_V2::system_clock::time_point last_meas_t; // time since last delta measurement of power consumption
+    std::vector<std::shared_ptr<LINK_DU_RU>> upList;
+    std::vector<std::shared_ptr<LINK_RU_RU>> siblingList;
 
 public:
     RU();
@@ -84,12 +79,10 @@ class DU
 private:
     int id;
     int bandwidth = 4000000; // default: 4 MHz
-    //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
-    //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
 
-    //float p = 3;                                            // power consumption, dependent on current traffic load, default = sleep power consumption, 3 mW or smth
-    //float p_tot = 0;                                        // total power consumption since t = 0
-    //std::chrono::_V2::system_clock::time_point last_meas_t; // time since last delta measurement of power consumption
+    std::vector<std::shared_ptr<LINK_CU_DU>> upList;
+    std::vector<std::shared_ptr<LINK_DU_RU>> downList;
+    std::vector<std::shared_ptr<LINK_DU_DU>> siblingList;
 
 public:
     DU();
@@ -106,6 +99,7 @@ private:
 
     std::vector<std::shared_ptr<LINK_ENDPOINT_CU>> upList;
     std::vector<std::shared_ptr<LINK_CU_DU>> downList;
+    //No siblings for CU, due to it being pointless in this case.
 
     //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
     //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
