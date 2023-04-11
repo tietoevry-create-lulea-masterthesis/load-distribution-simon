@@ -16,16 +16,10 @@ private:
 
 public:
     RU();
-    RU(std::string uid, float coords[2], int antennae, int bandwidth);
+    RU(int id);
 
-    const std::string get_UID();
-    const float *get_coords();
-    const int get_num_PRB();
-    const int get_alloc_PRB();
-    float calc_delta_p();
-    const float get_p();
-    const float get_p_tot();
-    void set_alloc_PRB(int a_PRB);
+    const int get_id();
+
 };
 
 // RU entry for use in the dist_list in UE class
@@ -86,7 +80,7 @@ private:
 
 public:
     DU();
-    DU(int id, int bandwidth);
+    DU(int id);
 
     const int get_id();
 };
