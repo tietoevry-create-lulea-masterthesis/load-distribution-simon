@@ -28,13 +28,23 @@ std::vector<std::shared_ptr<LINK_DU_RU>> DU_RU_List;
 std::vector<std::shared_ptr<LINK_RU_RU>> RU_RU_List;
 
 
-const float max_coord = 5000; // Determines the maximum x and y coordinate of the simulation map
+//const float max_coord = 5000; // Determines the maximum x and y coordinate of the simulation map
 
-unsigned int seed = 42;
+//unsigned int seed = 42;
 
-void createPredefinedConnections(){}
+void createPredefinedConnections(){
+       
+}
 
-void createRandomConnections(){}
+void createRandomConnections()
+{   
+    srand(34);
+
+    //RU-RU
+    for (int i = 0; i < RU_NUMBER; ++i) {
+        
+    }
+}
 
 extern int main(int argc, char **argv)
 {
