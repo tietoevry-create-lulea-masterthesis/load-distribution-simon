@@ -99,121 +99,23 @@ public:
     
 };
 
-//LINKS//
-
-class LINK_CU_DU
+template <typename T>
+class LINK
 {
     private:
         int id;
         int rate;
         int delay;
-        std::shared_ptr<CU> up;
-        std::shared_ptr<DU> down;
+        std::shared_ptr<T> up;
+        std::shared_ptr<T> down;
     public:
-        LINK_CU_DU();
-        LINK_CU_DU(int id, int rate, int delay, std::shared_ptr<CU> up, std::shared_ptr<DU> down);
+        LINK(int id, std::shared_ptr<T> up, std::shared_ptr<T> down);
 
-        const int get_id();
         const int get_rate();
         const int get_delay();
-        const std::shared_ptr<CU> get_upper();
-        const std::shared_ptr<DU> get_lower();
+        const std::shared_ptr<T> get_upper();
+        const std::shared_ptr<T> get_lower();
 
-        const void add_rate(int rate);
-        const void add_delay(int delay);
-        const void add_up(std::shared_ptr<CU> up);
-        const void add_down(std::shared_ptr<DU> down);
-};
-
-class LINK_DU_RU
-{
-    private:
-        int id;
-        int rate;
-        int delay;
-        std::shared_ptr<DU> up;
-        std::shared_ptr<RU> down;
-    public:
-        LINK_DU_RU();
-        LINK_DU_RU(int id, int rate, int delay, std::shared_ptr<DU> up, std::shared_ptr<RU> down);
-
-        const int get_id();
-        const int get_rate();
-        const int get_delay();
-        const std::shared_ptr<DU> get_upper();
-        const std::shared_ptr<RU> get_lower();
-
-        const void add_rate(int rate);
-        const void add_delay(int delay);
-        const void add_up(std::shared_ptr<DU> up);
-        const void add_down(std::shared_ptr<RU> down);
-};
-
-class LINK_DU_DU
-{
-    private:
-        int id;
-        int rate;
-        int delay;
-        std::shared_ptr<DU> up;
-        std::shared_ptr<DU> down;
-    public:
-        LINK_DU_DU();
-        LINK_DU_DU(int id, int rate, int delay, std::shared_ptr<DU> up, std::shared_ptr<DU> down);
-
-        const int get_id();
-        const int get_rate();
-        const int get_delay();
-        const std::shared_ptr<DU> get_upper();
-        const std::shared_ptr<DU> get_lower();
-
-        const void add_rate(int rate);
-        const void add_delay(int delay);
-        const void add_up(std::shared_ptr<DU> up);
-        const void add_down(std::shared_ptr<DU> down);
-};
-
-class LINK_RU_RU
-{
-    private:
-        int id;
-        int rate;
-        int delay;
-        std::shared_ptr<RU> up;
-        std::shared_ptr<RU> down;
-    public:
-        LINK_RU_RU();
-        LINK_RU_RU(int id, int rate, int delay, std::shared_ptr<RU> up, std::shared_ptr<RU> down);
-
-        const int get_id();
-        const int get_rate();
-        const int get_delay();
-        const std::shared_ptr<RU> get_upper();
-        const std::shared_ptr<RU> get_lower();
-
-        const void add_rate(int rate);
-        const void add_delay(int delay);
-        const void add_up(std::shared_ptr<RU> up);
-        const void add_down(std::shared_ptr<RU> down);
-};
-
-class LINK_ENDPOINT_CU
-{
-    private:
-        int id;
-        int rate;
-        int delay;
-        std::shared_ptr<ENDPOINT> up;
-        std::shared_ptr<CU> down;
-    public:
-        LINK_ENDPOINT_CU(int id, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down);
-
-        const int get_id();
-        const int get_rate();
-        const int get_delay();
-        const std::shared_ptr<ENDPOINT> get_upper();
-        const std::shared_ptr<CU> get_lower();
-
-        const void add_up(std::shared_ptr<ENDPOINT> up);
-        const void add_down(std::shared_ptr<CU> down);
-};
+        const void add_up(std::shared_ptr<T> up);
+        const void add_down(std::shared_ptr<T> down);
+}
