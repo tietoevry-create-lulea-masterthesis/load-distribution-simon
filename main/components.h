@@ -45,31 +45,6 @@ public:
 //     }
 // };
 
-class UE
-{
-private:
-    std::string uid;
-    float coords[2]; // x, y coords
-
-    int prb_demand = 2;                    // amount of physical resource blocks that the traffic of this UE demands
-    RU_entry dist_arr[UE_CLOSEST_RUS]; // array of n closest RUs
-
-public:
-    UE(std::string uid, float coords[2]);
-
-    const std::string get_UID();
-    const float *get_coords();
-    const int get_demand();
-    const RU_entry *get_dist_arr();
-
-    bool operator==(UE const &ue)
-    {
-        return (ue.uid.compare(this->uid) == 0);
-    }
-
-    void set_dist_arr(RU_entry *new_dist_arr);
-};
-
 class DU
 {
 private:

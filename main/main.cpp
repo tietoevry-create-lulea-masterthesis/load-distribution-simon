@@ -163,25 +163,20 @@ void CreateEndpointConnections()
     }
 }
 
-void createPredefinedConnections(){}
+void CreatePredefinedConnections(){}
 
 
-void createRandomConnections()
+void CreateRandomConnections()
 {   
     CreateRandomRU_RUConnections();
     CreateRandomDU_RUConnections();
     CreateRandomDU_DUConnections();
     CreateRandomCU_DUConnections();
     CreateEndpointConnections();
-
 }
 
-extern int main(int argc, char **argv)
+void CreateNodes()
 {
-    srand(seed);
-
-    int ru_i = 0;
-
     //Create RUs
     for (int i = 0; i < RU_NUMBER; ++i) {
         std::shared_ptr<RU> r = std::make_shared<RU>(i);
@@ -199,6 +194,10 @@ extern int main(int argc, char **argv)
         std::shared_ptr<CU> c = std::make_shared<CU>(i);
         CUContainer.push_back(c);
     }
+}
+
+extern int main(int argc, char **argv)
+{
 
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)
