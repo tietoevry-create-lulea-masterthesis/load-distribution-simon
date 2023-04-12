@@ -5,7 +5,7 @@
 #include "components.h"
 #include "sim.h"
 #include <unistd.h>
-#incldue <vector>
+#include <vector>
 
 using namespace std;
 

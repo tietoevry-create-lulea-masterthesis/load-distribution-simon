@@ -5,22 +5,7 @@
 #include <memory>
 #include <vector>
 
-class ENDPOINT //Fictional node representing connection to the wider internet from CUs. 
-{
-private:
-    int connected_UEs;
-
-    std::vector<std::shared_ptr<LINK>> downList;
-
-public:
-    ENDPOINT();
-    
-    const int get_connected_UE_number();
-    const void add_down(std::shared_ptr<LINK> l);
-    
-};
-
-template <class T>
+template <typename T>
 class LINK
 {
     private:
@@ -30,7 +15,6 @@ class LINK
         std::shared_ptr<T> up;
         std::shared_ptr<T> down;
     public:
-        LINK();
         LINK(int id, int rate, int delay, std::shared_ptr<T> up, std::shared_ptr<T> down);
 
         const int get_rate();
@@ -40,23 +24,21 @@ class LINK
 
         const void add_up(std::shared_ptr<T> up);
         const void add_down(std::shared_ptr<T> down);
-}
+};
 
 class NODE
 {
     private:
         int id;
-        int rate;
-        int delay;
-        std::vector<std::shared_ptr<LINK>> upList;
-        std::vector<std::shared_ptr<LINK>> downList;
+        std::vector<std::shared_ptr<LINK<NODE>>> upList;
+        std::vector<std::shared_ptr<LINK<NODE>>> downList;
     public:
-        Node();
+        NODE(int id);
 
-        const void add_up(std::shared_ptr<LINK> l);
-        const void add_down(std::shared_ptr<LINK> l);
+        const void add_up(std::shared_ptr<LINK<NODE>> l);
+        const void add_down(std::shared_ptr<LINK<NODE>> l);
+        const void set_id(int i);
 };
-}
 
 class CU: public NODE
 {
@@ -64,23 +46,38 @@ private:
 public:
     CU(int id);
 
-}
+    const void add_up(std::shared_ptr<LINK<NODE>> l);
+    const void add_down(std::shared_ptr<LINK<NODE>> l);
+};
 
 class DU: public NODE
 {
 private:
-    std::vector<std::shared_ptr<LINK>> siblingList;
+    std::vector<std::shared_ptr<LINK<NODE>>> siblingList;
 public:
     DU(int id);
 
-    const void add_sibling(std::shared_ptr<LINK> l);
-}
+    const void add_sibling(std::shared_ptr<LINK<NODE>> l);
+    const void add_up(std::shared_ptr<LINK<NODE>> l);
+    const void add_down(std::shared_ptr<LINK<NODE>> l);
+};
 class RU: public NODE
 {
 private:
-    std::vector<std::shared_ptr<LINK>> siblingList;
+    std::vector<std::shared_ptr<LINK<NODE>>> siblingList;
 public:
     RU(int id);
 
-    const void add_sibling(std::shared_ptr<LINK> l);
+    const void add_sibling(std::shared_ptr<LINK<NODE>> l);
+    const void add_up(std::shared_ptr<LINK<NODE>> l);
+    const void add_down(std::shared_ptr<LINK<NODE>> l);
+};
+
+class ENDPOINT: public NODE{
+    private:
+        int connectedUEs;
+    public:
+        const void add_down(std::shared_ptr<LINK<NODE>> l);
 }
+
+#include 'components.tpp'

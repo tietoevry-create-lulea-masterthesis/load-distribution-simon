@@ -5,24 +5,12 @@ NODE::NODE(int id) {
     int i;
 }
 
-LINK<NODE>::LINK(){}
-
-template <typename T>
-LINK<T>::LINK(int id, int rate, int delay, std::shared_ptr<T> up, std::shared_ptr<T> down) {
-    this->id = id;
-    this->rate = rate;
-    this->delay = delay;
-    this->up = up;
-    this->down = down;
-}
-template <typename T>
-const void LINK<T>::add_up(std::shared_ptr<T> up){
-    this->up = up;
+const void NODE::add_up(std::shared_ptr<LINK<NODE>> up) {
+    this->upList.push_back(up);
 }
 
-template <typename T>
-const void LINK<T>::add_down(std::shared_ptr<T> down){
-    this->down = down;
+const void NODE::set_id(int i) {
+    
 }
 
 // ============
@@ -31,64 +19,50 @@ const void LINK<T>::add_down(std::shared_ptr<T> down){
 
 
 RU::RU(int id) {
-
+    this->
 }
 
-const void RU::add_sibling(std::shared_ptr<LINK> l)
+const void RU::add_sibling(std::shared_ptr<LINK<NODE>> l)
 {
     this->siblingList.push_back(l);
 }
 
-const void RU::add_up(std::shared_ptr<LINK> l)
+const void RU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
-    this->upList.push_back(l);
+    this->add_up(l);
 }
 
 //CU METHODS//
 
-CU::CU(int id) {
-    this->id = id;
+CU::CU(int id) {}
+
+const void CU::add_down(std::shared_ptr<LINK<NODE>> l)
+{
+    this->add_down(l);
 }
 
-const int CU::get_id()
+const void CU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
-    return this->id;
-}
-
-const void CU::add_down(std::shared_ptr<LINK<T>> l)
-{
-    this->downList.push_back(l);
-}
-
-const void CU::add_up(std::shared_ptr<LINK<T>> l)
-{
-    this->upList.push_back(l);
+    this->add_up(l);
 }
 
 //DU METHODS//
 
-DU::DU(int id) {
-    this->id = id;
+DU::DU(int id) {}
+
+const void DU::add_up(std::shared_ptr<LINK<NODE>> l)
+{
+    this->add_up(l);
 }
 
-const int DU::get_id()
+const void DU::add_sibling(std::shared_ptr<LINK<NODE>> l)
 {
-    return this->id;
+    this->add_sibling(l);
 }
 
-const void DU::add_up(std::shared_ptr<LINK<T>> l)
+const void DU::add_down(std::shared_ptr<LINK<NODE>> l)
 {
-    this->upList.push_back(l);
-}
-
-const void DU::add_sibling(std::shared_ptr<LINK<T>> l)
-{
-    this->siblingList.push_back(l);
-}
-
-const void DU::add_down(std::shared_ptr<LINK<T>> l)
-{
-    this->downList.push_back(l);
+    this->add_down(l);
 }
 
 //ENDPOINT//
@@ -96,7 +70,7 @@ const void DU::add_down(std::shared_ptr<LINK<T>> l)
 ENDPOINT::ENDPOINT(){}
 
 
-const void ENDPOINT::add_down(std::shared_ptr<LINK> l) 
+const void ENDPOINT::add_down(std::shared_ptr<LINK<NODE>> l) 
 {
-    this->downList.push_back(l);
+    this->add_down(l);
 }
