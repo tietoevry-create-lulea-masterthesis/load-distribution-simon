@@ -87,12 +87,33 @@ void CreateRandomRU_RUConnections()
     }
 }
 
+void CreateRandomDU_DUConnections()
+{
+    for (int i = 0; i < DU_NUMBER; ++i) {
+        std::shared_ptr<DU> du = DUContainer[i];
+        int rate = CreateRandomRate();
+        int delay = CreateRandomDelay();
+        
+        if (AdjacentExistsUp(DUContainer, i)) {
+            if (GetRandomBool()) {
+                std::shared_ptr<DU> up = DUContainer[i+1];
+                std::shared_ptr<LINK_DU_DU> l = std::make_shared<LINK_DU_DU>(i, rate, delay, up, du);
+
+                DU_DU_List.push_back(l);
+                du->add_sibling(l);
+                up->add_sibling(l);
+            }
+        }
+    }
+}
+
 void createPredefinedConnections(){}
 
 
 void createRandomConnections()
 {   
-    
+    CreateRandomRU_RUConnections();
+
 }
 
 extern int main(int argc, char **argv)
