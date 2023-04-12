@@ -19,29 +19,31 @@ public:
     RU(int id);
 
     const int get_id();
+    const void add_sibling(std::shared_ptr<LINK_RU_RU> l);
+    const void add_up(std::shared_ptr<LINK_DU_RU> l);
 
 };
 
 // RU entry for use in the dist_list in UE class
-struct RU_entry
-{
-    std::string ru_uid;
-    float dist;
+// struct RU_entry
+// {
+//     std::string ru_uid;
+//     float dist;
 
-    RU_entry() {
-        ru_uid = "NULL";
-        dist = INT32_MAX;
-    }
+//     RU_entry() {
+//         ru_uid = "NULL";
+//         dist = INT32_MAX;
+//     }
 
-    RU_entry(std::string ru_uid, float dist) : ru_uid(ru_uid), dist(dist)
-    {
-    }
+//     RU_entry(std::string ru_uid, float dist) : ru_uid(ru_uid), dist(dist)
+//     {
+//     }
 
-    bool operator<(RU_entry const &e)
-    {
-        return (this->dist < e.dist);
-    }
-};
+//     bool operator<(RU_entry const &e)
+//     {
+//         return (this->dist < e.dist);
+//     }
+// };
 
 class UE
 {
@@ -142,6 +144,11 @@ class LINK_CU_DU
         const int get_delay();
         const std::shared_ptr<CU> get_upper();
         const std::shared_ptr<DU> get_lower();
+
+        const void add_rate(int rate);
+        const void add_delay(int delay);
+        const void add_up(std::shared_ptr<CU> up);
+        const void add_down(std::shared_ptr<DU> down);
 };
 
 class LINK_DU_RU
@@ -154,13 +161,18 @@ class LINK_DU_RU
         std::shared_ptr<RU> down;
     public:
         LINK_DU_RU();
-        LINK_DU_RU(int id, int rate, int delay, CU* up, DU* down);
+        LINK_DU_RU(int id, int rate, int delay, std::shared_ptr<DU> up, std::shared_ptr<RU> down);
 
         const int get_id();
         const int get_rate();
         const int get_delay();
         const std::shared_ptr<DU> get_upper();
         const std::shared_ptr<RU> get_lower();
+
+        const void add_rate(int rate);
+        const void add_delay(int delay);
+        const void add_up(std::shared_ptr<DU> up);
+        const void add_down(std::shared_ptr<RU> down);
 };
 
 class LINK_DU_DU
@@ -173,13 +185,18 @@ class LINK_DU_DU
         std::shared_ptr<DU> down;
     public:
         LINK_DU_DU();
-        LINK_DU_DU(int id, int rate, int delay, CU* up, DU* down);
+        LINK_DU_DU(int id, int rate, int delay, std::shared_ptr<DU> up, std::shared_ptr<DU> down);
 
         const int get_id();
         const int get_rate();
         const int get_delay();
         const std::shared_ptr<DU> get_upper();
         const std::shared_ptr<DU> get_lower();
+
+        const void add_rate(int rate);
+        const void add_delay(int delay);
+        const void add_up(std::shared_ptr<DU> up);
+        const void add_down(std::shared_ptr<DU> down);
 };
 
 class LINK_RU_RU
@@ -192,13 +209,18 @@ class LINK_RU_RU
         std::shared_ptr<RU> down;
     public:
         LINK_RU_RU();
-        LINK_RU_RU(int id, int rate, int delay, CU* up, DU* down);
+        LINK_RU_RU(int id, int rate, int delay, std::shared_ptr<RU> up, std::shared_ptr<RU> down);
 
         const int get_id();
         const int get_rate();
         const int get_delay();
         const std::shared_ptr<RU> get_upper();
         const std::shared_ptr<RU> get_lower();
+
+        const void add_rate(int rate);
+        const void add_delay(int delay);
+        const void add_up(std::shared_ptr<RU> up);
+        const void add_down(std::shared_ptr<RU> down);
 };
 
 class LINK_ENDPOINT_CU

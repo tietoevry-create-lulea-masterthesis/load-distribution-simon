@@ -32,9 +32,38 @@ std::vector<std::shared_ptr<LINK_RU_RU>> RU_RU_List;
 
 //unsigned int seed = 42;
 
+template<typename T>
+bool AdjacentExistsUp(std::vector<T> a, int i)
+{
+    return a[i+1] != null;
+}
+
+template<typename T>
+bool AdjacentExistsDown(std::vector<T> a, int i)
+{
+    return a[i-1] != null;
+}
+
+int CreateRandomRate()
+{
+    std::vector<int> rates {10, 50, 100, 250, 500, 750, 1000};
+
+    int r_pos = std::rand() % rates.size();
+    return rates[r_pos];
+}
+
+int CreateRandomDelay()
+{
+    std::vector<int> delays {1, 2, 3, 4, 5, 10, 20, 50, 100, 500};
+
+    int r_pos = std::rand() % delays.size();
+    return delays[r_pos];
+}
+
 void createPredefinedConnections(){
        
 }
+
 
 void createRandomConnections()
 {   
@@ -42,6 +71,18 @@ void createRandomConnections()
 
     //RU-RU
     for (int i = 0; i < RU_NUMBER; ++i) {
+        shared_ptr<RU> ru = RUContainer[i];
+
+        if (i == 0) {
+            if (AdjacentExistsUp(RUContainer, i)) {
+                bool b = rand() & 1;
+                if (b) {
+                    std::shared_ptr<LINK_RU_RU> l = std::make_shared<LINK_RU_RU>(i);
+                    
+
+                }
+            }
+        }
         
     }
 }
