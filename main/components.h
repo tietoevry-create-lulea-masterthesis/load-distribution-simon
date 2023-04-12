@@ -240,4 +240,9 @@ class LINK_ENDPOINT_CU
         const int get_delay();
         const std::shared_ptr<ENDPOINT> get_upper();
         const std::shared_ptr<CU> get_lower();
+
+        const void add_rate(int rate);
+        const void add_delay(int delay);
+        const void add_up(std::shared_ptr<ENDPOINT> up);
+        const void add_down(std::shared_ptr<CU> down);
 };

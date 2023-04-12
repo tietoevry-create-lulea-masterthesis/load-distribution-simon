@@ -334,3 +334,63 @@ const void LINK_CU_DU::add_down(std::shared_ptr<DU> down)
 {
     this->down = down;
 }
+
+//ENDPOINT-CU//
+
+LINK_ENDPOINT_CU::LINK_ENDPOINT_CU()
+{
+}
+
+LINK_ENDPOINT_CU::LINK_ENDPOINT_CU(int id, int rate, int delay, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down)
+{
+    this->id = id;
+    this->rate = rate;
+    this->delay = delay;
+    this->up = up;
+    this->down = down;
+}
+
+const int LINK_ENDPOINT_CU::get_id()
+{
+    return this->id;
+}
+
+const int LINK_ENDPOINT_CU::get_rate()
+{
+    return this->rate;
+}
+
+const int LINK_ENDPOINT_CU::get_delay()
+{
+    return this->delay;
+}
+
+const std::shared_ptr<ENDPOINT> LINK_ENDPOINT_CU::get_upper()
+{
+    return this->up;
+}
+
+const std::shared_ptr<CU> LINK_ENDPOINT_CU::get_lower()
+{
+    return this->down;
+}
+
+const void LINK_ENDPOINT_CU::add_rate(int rate)
+{
+    this->rate = rate;
+}
+
+const void LINK_ENDPOINT_CU::add_delay(int delay)
+{
+    this->delay = delay;
+}
+
+const void LINK_ENDPOINT_CU::add_up(std::shared_ptr<ENDPOINT> up)
+{
+    this->up = up;
+}
+
+const void LINK_ENDPOINT_CU::add_down(std::shared_ptr<CU> down)
+{
+    this->down = down;
+}
