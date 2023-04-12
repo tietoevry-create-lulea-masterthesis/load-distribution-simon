@@ -32,6 +32,13 @@ std::vector<std::shared_ptr<LINK_RU_RU>> RU_RU_List;
 
 //unsigned int seed = 42;
 
+srand(34);
+
+bool GetRandomBool()
+{
+    return rand() & 1;
+}
+
 template<typename T>
 bool AdjacentExistsUp(std::vector<T> a, int i)
 {
@@ -60,31 +67,32 @@ int CreateRandomDelay()
     return delays[r_pos];
 }
 
-void createPredefinedConnections(){
-       
+void CreateRandomRU_RUConnections()
+{
+    for (int i = 0; i < RU_NUMBER; ++i) {
+        std::shared_ptr<RU> ru = RUContainer[i];
+        int rate = CreateRandomRate();
+        int delay = CreateRandomDelay();
+        
+        if (AdjacentExistsUp(RUContainer, i)) {
+            if (GetRandomBool()) {
+                std::shared_ptr<RU> up = RUContainer[i+1];
+                std::shared_ptr<LINK_RU_RU> l = std::make_shared<LINK_RU_RU>(i, rate, delay, up, ru);
+
+                RU_RU_List.push_back(l);
+                ru->add_sibling(l);
+                up->add_sibling(l);
+            }
+        }
+    }
 }
+
+void createPredefinedConnections(){}
 
 
 void createRandomConnections()
 {   
-    srand(34);
-
-    //RU-RU
-    for (int i = 0; i < RU_NUMBER; ++i) {
-        shared_ptr<RU> ru = RUContainer[i];
-
-        if (i == 0) {
-            if (AdjacentExistsUp(RUContainer, i)) {
-                bool b = rand() & 1;
-                if (b) {
-                    std::shared_ptr<LINK_RU_RU> l = std::make_shared<LINK_RU_RU>(i);
-                    
-
-                }
-            }
-        }
-        
-    }
+    
 }
 
 extern int main(int argc, char **argv)
