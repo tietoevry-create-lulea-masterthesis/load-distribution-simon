@@ -33,16 +33,26 @@ const void RU::add_up(std::shared_ptr<LINK_DU_RU> l)
 
 //CU METHODS//
 
+DU::DU(int id) {
+    this->id = id;
+}
+
 const int CU::get_id()
 {
     return this->id;
 }
 
-//DU METHODS//
-
-DU::DU() 
+const void CU::add_down(std::shared_ptr<LINK_CU_DU> l)
 {
+    this->downList.push_back(l);
 }
+
+const void CU::add_up(std::shared_ptr<LINK_ENDPOINT_CU> l)
+{
+    this->upList.push_back(l);
+}
+
+//DU METHODS//
 
 DU::DU(int id) {
     this->id = id;
@@ -53,45 +63,29 @@ const int DU::get_id()
     return this->id;
 }
 
-
-// ============
-// UE Functions
-// ============
-
-UE::UE(string uid, float coords[2])
+const void DU::add_up(std::shared_ptr<LINK_CU_DU> l)
 {
-    this->uid = uid;
-    this->coords[0] = coords[0];
-    this->coords[1] = coords[1];
+    this->upList.push_back(l);
 }
 
-const string UE::get_UID()
+const void DU::add_sibling(std::shared_ptr<LINK_DU_DU> l)
 {
-    return this->uid;
+    this->siblingList.push_back(l);
 }
 
-const float *UE::get_coords()
+const void DU::add_down(std::shared_ptr<LINK_DU_RU> l)
 {
-    return this->coords;
+    this->downList.push_back(l);
 }
 
-const int UE::get_demand()
+//ENDPOINT//
+
+ENDPOINT::ENDPOINT(){}
+
+const void ENDPOINT::add_down(std::shared_ptr<LINK_ENDPOINT_CU> l) 
 {
-    return this->prb_demand;
+    this->downList.push_back(l);
 }
-
-// const RU_entry *UE::get_dist_arr()
-// {
-//     return this->dist_arr;
-// }
-
-// void UE::set_dist_arr(RU_entry new_dist_arr[UE_CLOSEST_RUS])
-// {
-//     for (size_t i = 0; i < UE_CLOSEST_RUS; i++)
-//     {
-//         this->dist_arr[i] = new_dist_arr[i];
-//     }
-// }
 
 //List functions//
 
@@ -337,15 +331,11 @@ const void LINK_CU_DU::add_down(std::shared_ptr<DU> down)
 
 //ENDPOINT-CU//
 
-LINK_ENDPOINT_CU::LINK_ENDPOINT_CU()
-{
-}
-
-LINK_ENDPOINT_CU::LINK_ENDPOINT_CU(int id, int rate, int delay, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down)
+LINK_ENDPOINT_CU::LINK_ENDPOINT_CU(int id, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down)
 {
     this->id = id;
-    this->rate = rate;
-    this->delay = delay;
+    this->rate = 999999999;
+    this->delay = 0;
     this->up = up;
     this->down = down;
 }
@@ -373,16 +363,6 @@ const std::shared_ptr<ENDPOINT> LINK_ENDPOINT_CU::get_upper()
 const std::shared_ptr<CU> LINK_ENDPOINT_CU::get_lower()
 {
     return this->down;
-}
-
-const void LINK_ENDPOINT_CU::add_rate(int rate)
-{
-    this->rate = rate;
-}
-
-const void LINK_ENDPOINT_CU::add_delay(int delay)
-{
-    this->delay = delay;
 }
 
 const void LINK_ENDPOINT_CU::add_up(std::shared_ptr<ENDPOINT> up)

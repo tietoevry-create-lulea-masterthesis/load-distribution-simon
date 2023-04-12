@@ -75,16 +75,19 @@ class DU
 private:
     int id;
     int bandwidth = 4000000; // default: 4 MHz
-
     std::vector<std::shared_ptr<LINK_CU_DU>> upList;
     std::vector<std::shared_ptr<LINK_DU_RU>> downList;
     std::vector<std::shared_ptr<LINK_DU_DU>> siblingList;
 
 public:
-    DU();
+    //DU();
     DU(int id);
 
     const int get_id();
+
+    const void add_sibling(std::shared_ptr<LINK_DU_DU> l);
+    const void add_up(std::shared_ptr<LINK_CU_DU> l);
+    const void add_down(std::shared_ptr<LINK_DU_RU> l)
 };
 
 class CU
@@ -95,20 +98,15 @@ private:
 
     std::vector<std::shared_ptr<LINK_ENDPOINT_CU>> upList;
     std::vector<std::shared_ptr<LINK_CU_DU>> downList;
-    //No siblings for CU, due to it being pointless in this case.
-
-    //int num_PRB;             // number of physical resource blocks, depends on the bandwidth
-    //int alloc_PRB;           // number of physical resource blocks that have been allocated to UE
-
-    //float p = 3;                                            // power consumption, dependent on current traffic load, default = sleep power consumption, 3 mW or smth
-    //float p_tot = 0;                                        // total power consumption since t = 0
-    //std::chrono::_V2::system_clock::time_point last_meas_t; // time since last delta measurement of power consumption
 
 public:
     CU();
-    CU(int id, float coords[2], int antennae, int bandwidth);
+    CU(int id);
 
     const int get_id();
+
+    const void add_up(std::shared_ptr<LINK_ENDPOINT_CU> l);
+    const void add_down(std::shared_ptr<LINK_CU_DU> l)
 };
 
 class ENDPOINT //Fictional node representing connection to the wider internet from CUs. 
@@ -122,6 +120,7 @@ public:
     ENDPOINT();
     
     const int get_connected_UE_number();
+    const void add_down(std::shared_ptr<LINK_ENDPOINT_CU> l);
     
 };
 
@@ -232,8 +231,7 @@ class LINK_ENDPOINT_CU
         std::shared_ptr<ENDPOINT> up;
         std::shared_ptr<CU> down;
     public:
-        LINK_ENDPOINT_CU();
-        LINK_ENDPOINT_CU(int id, int rate, int delay, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down);
+        LINK_ENDPOINT_CU(int id, std::shared_ptr<ENDPOINT> up, std::shared_ptr<CU> down);
 
         const int get_id();
         const int get_rate();
@@ -241,8 +239,6 @@ class LINK_ENDPOINT_CU
         const std::shared_ptr<ENDPOINT> get_upper();
         const std::shared_ptr<CU> get_lower();
 
-        const void add_rate(int rate);
-        const void add_delay(int delay);
         const void add_up(std::shared_ptr<ENDPOINT> up);
         const void add_down(std::shared_ptr<CU> down);
 };
