@@ -62,7 +62,7 @@ public:
 
     const void add_sibling(std::shared_ptr<LINK_DU_DU> l);
     const void add_up(std::shared_ptr<LINK_CU_DU> l);
-    const void add_down(std::shared_ptr<LINK_DU_RU> l)
+    const void add_down(std::shared_ptr<LINK_DU_RU> l);
 };
 
 class CU
@@ -81,7 +81,7 @@ public:
     const int get_id();
 
     const void add_up(std::shared_ptr<LINK_ENDPOINT_CU> l);
-    const void add_down(std::shared_ptr<LINK_CU_DU> l)
+    const void add_down(std::shared_ptr<LINK_CU_DU> l);
 };
 
 class ENDPOINT //Fictional node representing connection to the wider internet from CUs. 
