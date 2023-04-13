@@ -8,25 +8,25 @@ PATH<T>::PATH()
 }
 
 template <typename T>
-PATH<T>::addNode(std::shared_ptr<T> node)
+const void PATH<T>::addNode(std::shared_ptr<T> node)
 {
     this->nodes.push_back(node);
 }
 
 template <typename T>
-PATH<T>::addLink(std::shared_ptr<T> link)
+const void PATH<T>::addLink(std::shared_ptr<T> link)
 {
     this->links.push_back(link);
 }
 
 template <typename T>
-PATH<T>::setComplete()
+const void PATH<T>::setComplete()
 {
     this->isComplete = true;
 }
 
 template <typename T>
-PATH<T>::addDelay(int delay)
+const void PATH<T>::addDelay(int delay)
 {
     this->totalDelay = (this->totalDelay + delay);
 }
