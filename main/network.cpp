@@ -4,6 +4,7 @@
 #include <vector>
 #include <random>
 #include <string>
+#include "path.h"
 
 ///Containers
 //Nodes
