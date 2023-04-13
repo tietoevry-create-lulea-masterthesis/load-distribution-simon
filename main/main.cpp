@@ -1,17 +1,11 @@
 #include <random>
 #include <string>
-#include <InfluxDBFactory.h>
+//#include <InfluxDBFactory.h>
 #include "constants.h"
 #include "components.h"
 #include "sim.h"
 #include <unistd.h>
 #include <vector>
-
-using namespace std;
-
-RU sim_RUs[RU_NUM];
-list<UE> sim_UEs;
-list<UE> RU_conn[RU_NUM]; // Array of lists, one list for each RU that keeps track of all UEs connected to it
 
 
 ///Containers
@@ -23,18 +17,16 @@ std::vector<std::shared_ptr<CU>> CUContainer;
 std::shared_ptr<ENDPOINT> endpoint = std::make_shared<ENDPOINT>(); //Create Endpoint
 
 //Edges
-std::vector<std::shared_ptr<LINK_ENDPOINT_CU>> ENDPOINT_CU_List;
-std::vector<std::shared_ptr<LINK_CU_DU>> CU_DU_List;
-std::vector<std::shared_ptr<LINK_DU_DU>> DU_DU_List;
-std::vector<std::shared_ptr<LINK_DU_RU>> DU_RU_List;
-std::vector<std::shared_ptr<LINK_RU_RU>> RU_RU_List;
+std::vector<std::shared_ptr<LINK<NODE>>> ENDPOINT_CU_List;
+std::vector<std::shared_ptr<LINK<NODE>>> CU_DU_List;
+std::vector<std::shared_ptr<LINK<NODE>>> DU_DU_List;
+std::vector<std::shared_ptr<LINK<NODE>>> DU_RU_List;
+std::vector<std::shared_ptr<LINK<NODE>>> RU_RU_List;
 
 
 //const float max_coord = 5000; // Determines the maximum x and y coordinate of the simulation map
 
 //unsigned int seed = 42;
-
-srand(34);
 
 bool GetRandomBool()
 {
@@ -79,7 +71,7 @@ void CreateRandomRU_RUConnections()
         if (AdjacentExistsUp(RUContainer, i)) {
             if (GetRandomBool()) {
                 std::shared_ptr<RU> up = RUContainer[i+1];
-                std::shared_ptr<LINK_RU_RU> l = std::make_shared<LINK_RU_RU>(i, rate, delay, up, ru);
+                std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, up, ru);
 
                 RU_RU_List.push_back(l);
                 ru->add_sibling(l);
@@ -99,7 +91,7 @@ void CreateRandomDU_DUConnections()
         if (AdjacentExistsUp(DUContainer, i)) {
             if (GetRandomBool()) {
                 std::shared_ptr<DU> up = DUContainer[i+1];
-                std::shared_ptr<LINK_DU_DU> l = std::make_shared<LINK_DU_DU>(i, rate, delay, up, du);
+                std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, up, du);
 
                 DU_DU_List.push_back(l);
                 du->add_sibling(l);
@@ -119,7 +111,7 @@ void CreateRandomDU_RUConnections()
                 int rate = CreateRandomRate();
                 int delay = CreateRandomDelay();
 
-                std::shared_ptr<LINK_DU_RU> l = std::make_shared<LINK_DU_RU>(i, rate, delay, du, ru);
+                std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, du, ru);
 
                 DU_RU_List.push_back(l);
                 du->add_down(l);
@@ -139,7 +131,7 @@ void CreateRandomCU_DUConnections()
                 int rate = CreateRandomRate();
                 int delay = CreateRandomDelay();
 
-                std::shared_ptr<LINK_CU_DU> l = std::make_shared<LINK_CU_DU>(i, rate, delay, cu, du);
+                std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, cu, du);
 
                 CU_DU_List.push_back(l);
                 cu->add_down(l);
@@ -154,7 +146,7 @@ void CreateEndpointConnections()
     for (int i = 0; i < CU_NUMBER; ++i) {
         std::shared_ptr<CU> cu = CUContainer[i];
 
-        std::shared_ptr<LINK_ENDPOINT_CU> l = std::make_shared<LINK_ENDPOINT_CU>(i, endpoint, cu);
+        std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, endpoint, cu);
 
         ENDPOINT_CU_List.push_back(l);
         endpoint->add_down(l);
@@ -198,6 +190,8 @@ void CreateNodes()
 
 extern int main(int argc, char **argv)
 {
+
+    srand(34);
 
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)

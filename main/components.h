@@ -80,6 +80,6 @@ class ENDPOINT: public NODE{
     public:
         ENDPOINT(int id);
         const void add_down(std::shared_ptr<LINK<NODE>> l);
-}
+};
 
-#include 'components.tpp'
+#include "components.tpp"
