@@ -14,7 +14,7 @@ std::vector<std::shared_ptr<RU>> RUContainer;
 std::vector<std::shared_ptr<DU>> DUContainer;
 std::vector<std::shared_ptr<CU>> CUContainer;
 
-std::shared_ptr<ENDPOINT> endpoint = std::make_shared<ENDPOINT>(); //Create Endpoint
+std::shared_ptr<ENDPOINT> endpoint = std::make_shared<ENDPOINT>(1); //Create Endpoint
 
 //Edges
 std::vector<std::shared_ptr<LINK<NODE>>> ENDPOINT_CU_List;
