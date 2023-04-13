@@ -193,6 +193,8 @@ extern int main(int argc, char **argv)
 
     srand(34);
 
+    CreateRandomConnections();
+
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)
     // {
