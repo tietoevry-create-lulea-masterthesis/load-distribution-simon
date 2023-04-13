@@ -1,6 +1,8 @@
 #include <iostream>
 #include "components.h"
 
+NODE::NODE(){}
+
 NODE::NODE(int id) {
     int i;
 }

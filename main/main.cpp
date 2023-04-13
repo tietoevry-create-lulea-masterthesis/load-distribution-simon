@@ -3,6 +3,7 @@
 //#include <InfluxDBFactory.h>
 #include "constants.h"
 #include "components.h"
+#include "components.cpp"
 //#include "sim.h"
 #include <unistd.h>
 #include <vector>
