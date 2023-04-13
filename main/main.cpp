@@ -194,6 +194,8 @@ extern int main(int argc, char **argv)
 
     srand(34);
 
+    CreateNodes();
+
     CreateRandomConnections();
 
     int rus = RUContainer.size();
