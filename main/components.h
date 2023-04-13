@@ -33,6 +33,7 @@ class NODE
         std::vector<std::shared_ptr<LINK<NODE>>> upList;
         std::vector<std::shared_ptr<LINK<NODE>>> downList;
     public:
+        NODE();
         NODE(int id);
 
         const void add_up(std::shared_ptr<LINK<NODE>> l);
@@ -77,6 +78,7 @@ class ENDPOINT: public NODE{
     private:
         int connectedUEs;
     public:
+        ENDPOINT(int id);
         const void add_down(std::shared_ptr<LINK<NODE>> l);
 }
 

@@ -10,7 +10,7 @@ const void NODE::add_up(std::shared_ptr<LINK<NODE>> up) {
 }
 
 const void NODE::set_id(int i) {
-    
+
 }
 
 // ============
@@ -19,7 +19,7 @@ const void NODE::set_id(int i) {
 
 
 RU::RU(int id) {
-    this->
+    this->set_id(id);
 }
 
 const void RU::add_sibling(std::shared_ptr<LINK<NODE>> l)
@@ -34,7 +34,9 @@ const void RU::add_up(std::shared_ptr<LINK<NODE>> l)
 
 //CU METHODS//
 
-CU::CU(int id) {}
+CU::CU(int id) {
+    this->set_id(id);
+}
 
 const void CU::add_down(std::shared_ptr<LINK<NODE>> l)
 {
@@ -48,7 +50,9 @@ const void CU::add_up(std::shared_ptr<LINK<NODE>> l)
 
 //DU METHODS//
 
-DU::DU(int id) {}
+DU::DU(int id) {
+    this->set_id(id);
+}
 
 const void DU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
@@ -67,7 +71,7 @@ const void DU::add_down(std::shared_ptr<LINK<NODE>> l)
 
 //ENDPOINT//
 
-ENDPOINT::ENDPOINT(){}
+ENDPOINT::ENDPOINT(int i){}
 
 
 const void ENDPOINT::add_down(std::shared_ptr<LINK<NODE>> l) 
