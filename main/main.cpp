@@ -63,7 +63,7 @@ int CreateRandomDelay()
     return delays[r_pos];
 }
 
-void CreateRandomRU_RUConnections()
+void CreateRandomRU_RUConnections() //Should be okay
 {
     for (int i = 0; i < RU_NUMBER; ++i) {
         std::shared_ptr<RU> ru = RUContainer[i];
@@ -116,8 +116,8 @@ void CreateRandomDU_RUConnections()
                 std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, du, ru);
 
                 DU_RU_List.push_back(l);
-                du->add_down(l);
                 ru->add_up(l);
+                du->add_down(l); //Segmentation fault
             }
         }
     }
