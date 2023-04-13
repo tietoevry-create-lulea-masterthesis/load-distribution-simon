@@ -7,10 +7,6 @@ NODE::NODE(int id) {
     int i;
 }
 
-const void NODE::add_up(std::shared_ptr<LINK<NODE>> up) {
-    this->upList.push_back(up);
-}
-
 const void NODE::set_id(int i) {
 
 }
@@ -31,7 +27,7 @@ const void RU::add_sibling(std::shared_ptr<LINK<NODE>> l)
 
 const void RU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_up(l);
+    this->upList.push_back(l);
 }
 
 //CU METHODS//
@@ -42,12 +38,12 @@ CU::CU(int id) {
 
 const void CU::add_down(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_down(l);
+    this->downList.push_back(l);
 }
 
 const void CU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_up(l);
+    this->upList.push_back(l);
 }
 
 //DU METHODS//
@@ -58,17 +54,17 @@ DU::DU(int id) {
 
 const void DU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_up(l);
+    this->upList.push_back(l);
 }
 
 const void DU::add_sibling(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_sibling(l);
+    this->siblingList.push_back(l);
 }
 
 const void DU::add_down(std::shared_ptr<LINK<NODE>> l)
 {
-    this->add_down(l);
+    this->downList.push_back(l);
 }
 
 //ENDPOINT//
@@ -78,5 +74,5 @@ ENDPOINT::ENDPOINT(int i){}
 
 const void ENDPOINT::add_down(std::shared_ptr<LINK<NODE>> l) 
 {
-    this->add_down(l);
+    this->downList.push_back(l);
 }

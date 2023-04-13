@@ -30,20 +30,17 @@ class NODE
 {
     private:
         int id;
-        std::vector<std::shared_ptr<LINK<NODE>>> upList;
-        std::vector<std::shared_ptr<LINK<NODE>>> downList;
     public:
         NODE();
         NODE(int id);
-
-        const void add_up(std::shared_ptr<LINK<NODE>> l);
-        const void add_down(std::shared_ptr<LINK<NODE>> l);
         const void set_id(int i);
 };
 
 class CU: public NODE
 {
 private:
+    std::vector<std::shared_ptr<LINK<NODE>>> upList;
+    std::vector<std::shared_ptr<LINK<NODE>>> downList;
 public:
     CU(int id);
 
@@ -54,6 +51,8 @@ public:
 class DU: public NODE
 {
 private:
+    std::vector<std::shared_ptr<LINK<NODE>>> upList;
+    std::vector<std::shared_ptr<LINK<NODE>>> downList;
     std::vector<std::shared_ptr<LINK<NODE>>> siblingList;
 public:
     DU(int id);
@@ -65,18 +64,21 @@ public:
 class RU: public NODE
 {
 private:
+    std::vector<std::shared_ptr<LINK<NODE>>> upList;
+    std::vector<std::shared_ptr<LINK<NODE>>> downList;
     std::vector<std::shared_ptr<LINK<NODE>>> siblingList;
 public:
     RU(int id);
 
     const void add_sibling(std::shared_ptr<LINK<NODE>> l);
     const void add_up(std::shared_ptr<LINK<NODE>> l);
-    const void add_down(std::shared_ptr<LINK<NODE>> l);
 };
 
 class ENDPOINT: public NODE{
     private:
-        int connectedUEs;
+    int connectedUEs;
+    std::vector<std::shared_ptr<LINK<NODE>>> downList;
+
     public:
         ENDPOINT(int id);
         const void add_down(std::shared_ptr<LINK<NODE>> l);
