@@ -4,6 +4,7 @@
 #include "constants.h"
 #include "components.h"
 #include "components.cpp"
+#include "path.h"
 //#include "sim.h"
 #include <unistd.h>
 #include <vector>
