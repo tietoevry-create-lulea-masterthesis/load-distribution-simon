@@ -3,7 +3,7 @@
 //#include <InfluxDBFactory.h>
 #include "constants.h"
 #include "components.h"
-#include "sim.h"
+//#include "sim.h"
 #include <unistd.h>
 #include <vector>
 
@@ -36,13 +36,13 @@ bool GetRandomBool()
 template<typename T>
 bool AdjacentExistsUp(std::vector<T> a, int i)
 {
-    return a[i+1] != null;
+    return a[i+1] != nullptr;
 }
 
 template<typename T>
 bool AdjacentExistsDown(std::vector<T> a, int i)
 {
-    return a[i-1] != null;
+    return a[i-1] != nullptr;
 }
 
 int CreateRandomRate()
