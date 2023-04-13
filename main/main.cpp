@@ -6,6 +6,7 @@
 //#include "sim.h"
 #include <unistd.h>
 #include <vector>
+#include <iostream>
 
 
 ///Containers
@@ -194,6 +195,12 @@ extern int main(int argc, char **argv)
     srand(34);
 
     CreateRandomConnections();
+
+    int rus = RUContainer.size();
+    int ru_ru = RU_RU_List.size();
+    int du_ru = DU_RU_List.size();
+
+    std::cout << "Number of RUs: " << rus << "\n Number of RU-RU Links: " << ru_ru << "\ Number of DU-CU Links: " << du_ru; 
 
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)
