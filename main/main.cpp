@@ -190,6 +190,31 @@ void CreateNodes()
     }
 }
 
+void TestPrint()
+{
+    int rus = RUContainer.size();
+    int dus = DUContainer.size();
+    int cus = CUContainer.size();
+
+    int ru_ru = RU_RU_List.size();
+    int du_ru = DU_RU_List.size();
+    int du_du = DU_DU_List.size();
+    int cu_du = CU_DU_List.size();
+    int end = ENDPOINT_CU_List.size();
+
+    std::cout << "Number of RUs: " << rus << "\n";
+    std::cout << "Number of DUs: " << dus << "\n";
+    std::cout << "Number of CUs: " << cus << "\n";
+
+    std::cout << "-------------------------------------\n";
+
+    std::cout << "Number of RU-RU Links: " << ru_ru << "\n";
+    std::cout << "Number of DU-RU Links: " << du_ru << "\n";
+    std::cout << "Number of DU-DU Links: " << du_du << "\n";
+    std::cout << "Number of CU-DU Links: " << cu_du << "\n";
+    std::cout << "Number of ENDPOINT-CU Links: " << end << "\n";
+}
+
 extern int main(int argc, char **argv)
 {
 
@@ -199,13 +224,7 @@ extern int main(int argc, char **argv)
 
     CreateRandomConnections();
 
-    int rus = RUContainer.size();
-    int ru_ru = RU_RU_List.size();
-    int du_ru = DU_RU_List.size();
-
-    std::cout << "Number of RUs: " << rus << "\n";
-    std::cout << "Number of RU-RU Links: " << ru_ru << "\n";
-    std::cout << "Number of DU-CU Links: " << du_ru << "\n";
+    TestPrint();
 
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)
