@@ -200,7 +200,7 @@ extern int main(int argc, char **argv)
     int ru_ru = RU_RU_List.size();
     int du_ru = DU_RU_List.size();
 
-    std::cout << "Number of RUs: " << rus << "\n Number of RU-RU Links: " << ru_ru << "\ Number of DU-CU Links: " << du_ru; 
+    std::cout << "Number of RUs: " << rus << "\n Number of RU-RU Links: " << ru_ru << "\n Number of DU-CU Links: " << du_ru; 
 
     // Place RUs
     // for (size_t y = 0; y < sqrt(RU_NUM); y++)
