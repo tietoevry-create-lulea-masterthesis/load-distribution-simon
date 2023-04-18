@@ -5,7 +5,7 @@
 //#include "components.h"
 //#include "components.cpp"
 #include "network.cpp"
-//#include "path.h"
+#include "path.h"
 //#include "sim.h"
 #include <unistd.h>
 #include <vector>
