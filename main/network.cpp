@@ -206,37 +206,44 @@ void TestPrint()
     std::cout << "Number of ENDPOINT-CU Links: " << end << "\n";
 }
 
-void CreateSingleFirstPath() {
+void CreateSingleFirstPath(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
 }
 
-// void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel) { // For basic testing. Forward only
+void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel) { // For basic testing. Forward only
 
-//     int levelTotalNodes = 0;
+    int levelTotalNodes = 0;
 
-//     switch (currentLevel) {
-//         case 0: //RU
-//             levelTotalNodes = RU_NUMBER;
-//             nodes = RUContainer;
-//             break;
-//         case 1: //DU
-//             levelTotalNodes = DU_NUMBER;
-//             nodes = DUContainer;
-//             break;
-//         case 2: //CU
-//             levelTotalNodes = CU_NUMBER;
-//             connections = ENDPOINT_CU_List;
-//             break;
-//         case 3: //ENDPOINT
-//             p->setComplete();
-//             return;
-//         default:
-//             std::cout << "Something wrong with single path recursive";
-//             return;    
-//     }
+    std::vector<std::shared_ptr<NODE>> container;
+
+    switch (currentLevel) {
+        case 0: //RU
+            levelTotalNodes = RU_NUMBER;
+            container = RUContainer;
+            break;
+        case 1: //DU
+            levelTotalNodes = DU_NUMBER;
+            container = DUContainer;
+            break;
+        case 2: //CU
+            levelTotalNodes = CU_NUMBER;
+            container = CUContainer;
+            break;
+        case 3: //ENDPOINT
+            p->setComplete();
+            return;
+        default:
+            std::cout << "Something wrong with single path recursive";
+            return;    
+    }
 
 
-//     for (int i = 0; i < levelTotalNodes; ++i) {
-//         for (int j = 0; j < )
-//     }
-// }
+    for (int i = 0; i < levelTotalNodes; ++i) {
+        int cSize = container[i]->get_upList().size();
+        auto list = container[i]->get_upList();
+
+        for (int j = 0; j < cSize; ++j) {
+            //list[j]
+        }
+    }
+}
