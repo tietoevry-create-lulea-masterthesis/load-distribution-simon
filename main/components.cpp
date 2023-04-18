@@ -11,6 +11,36 @@ const void NODE::set_id(int i) {
 
 }
 
+const std::vector<std::shared_ptr<LINK<NODE>>> NODE::get_upList()
+{
+    return this->upList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> NODE::get_downList()
+{
+    return this->downList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> NODE::get_siblingList()
+{
+    return this->siblingList;
+}
+
+const void NODE::add_sibling(std::shared_ptr<LINK<NODE>> l)
+{
+    this->siblingList.push_back(l);
+}
+
+const void NODE::add_up(std::shared_ptr<LINK<NODE>> l)
+{
+    this->upList.push_back(l);
+}
+
+const void NODE::add_down(std::shared_ptr<LINK<NODE>> l)
+{
+    this->downList.push_back(l);
+}
+
 // ============
 // RU Functions
 // ============

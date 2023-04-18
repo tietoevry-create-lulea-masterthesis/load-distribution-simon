@@ -8,9 +8,9 @@
 
 ///Containers
 //Nodes
-std::vector<std::shared_ptr<RU>> RUContainer;
-std::vector<std::shared_ptr<DU>> DUContainer;
-std::vector<std::shared_ptr<CU>> CUContainer;
+std::vector<std::shared_ptr<NODE>> RUContainer;
+std::vector<std::shared_ptr<NODE>> DUContainer;
+std::vector<std::shared_ptr<NODE>> CUContainer;
 
 std::shared_ptr<ENDPOINT> endpoint = std::make_shared<ENDPOINT>(1); //Create Endpoint
 
@@ -57,13 +57,13 @@ int CreateRandomDelay()
 void CreateRandomRU_RUConnections() //Should be okay
 {
     for (int i = 0; i < RU_NUMBER; ++i) {
-        std::shared_ptr<RU> ru = RUContainer[i];
+        std::shared_ptr<NODE> ru = RUContainer[i];
         int rate = CreateRandomRate();
         int delay = CreateRandomDelay();
         
         if (AdjacentExistsUp(RUContainer, i)) {
             if (GetRandomBool()) {
-                std::shared_ptr<RU> up = RUContainer[i+1];
+                std::shared_ptr<NODE> up = RUContainer[i+1];
                 std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, up, ru);
 
                 RU_RU_List.push_back(l);
@@ -77,13 +77,13 @@ void CreateRandomRU_RUConnections() //Should be okay
 void CreateRandomDU_DUConnections()
 {
     for (int i = 0; i < DU_NUMBER; ++i) {
-        std::shared_ptr<DU> du = DUContainer[i];
+        std::shared_ptr<NODE> du = DUContainer[i];
         int rate = CreateRandomRate();
         int delay = CreateRandomDelay();
         
         if (AdjacentExistsUp(DUContainer, i)) {
             if (GetRandomBool()) {
-                std::shared_ptr<DU> up = DUContainer[i+1];
+                std::shared_ptr<NODE> up = DUContainer[i+1];
                 std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, up, du);
 
                 DU_DU_List.push_back(l);
@@ -99,8 +99,8 @@ void CreateRandomDU_RUConnections()
     for (int i = 0; i < RU_NUMBER; ++i) {
         for (int j = 0; j < DU_NUMBER; ++j) {
             if (GetRandomBool()) {
-                std::shared_ptr<RU> ru = RUContainer[i];
-                std::shared_ptr<DU> du = DUContainer[j];
+                std::shared_ptr<NODE> ru = RUContainer[i];
+                std::shared_ptr<NODE> du = DUContainer[j];
                 int rate = CreateRandomRate();
                 int delay = CreateRandomDelay();
 
@@ -119,8 +119,8 @@ void CreateRandomCU_DUConnections()
     for (int i = 0; i < DU_NUMBER; ++i) {
         for (int j = 0; j < CU_NUMBER; ++j) {
             if (GetRandomBool()) {
-                std::shared_ptr<DU> du = DUContainer[i];
-                std::shared_ptr<CU> cu = CUContainer[j];
+                std::shared_ptr<NODE> du = DUContainer[i];
+                std::shared_ptr<NODE> cu = CUContainer[j];
                 int rate = CreateRandomRate();
                 int delay = CreateRandomDelay();
 
@@ -137,7 +137,7 @@ void CreateRandomCU_DUConnections()
 void CreateEndpointConnections()
 {
     for (int i = 0; i < CU_NUMBER; ++i) {
-        std::shared_ptr<CU> cu = CUContainer[i];
+        std::shared_ptr<NODE> cu = CUContainer[i];
 
         std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, 99999999, 0, endpoint, cu);
 
