@@ -30,6 +30,21 @@ const void RU::add_up(std::shared_ptr<LINK<NODE>> l)
     this->upList.push_back(l);
 }
 
+const std::vector<std::shared_ptr<LINK<NODE>>> RU::get_upList()
+{
+    return this->upList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> RU::get_downList()
+{
+    return this->downList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> RU::get_siblingList()
+{
+    return this->siblingList;
+}
+
 //CU METHODS//
 
 CU::CU(int id) {
@@ -44,6 +59,16 @@ const void CU::add_down(std::shared_ptr<LINK<NODE>> l)
 const void CU::add_up(std::shared_ptr<LINK<NODE>> l)
 {
     this->upList.push_back(l);
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> CU::get_upList()
+{
+    return this->upList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> CU::get_downList()
+{
+    return this->downList;
 }
 
 //DU METHODS//
@@ -65,6 +90,21 @@ const void DU::add_sibling(std::shared_ptr<LINK<NODE>> l)
 const void DU::add_down(std::shared_ptr<LINK<NODE>> l)
 {
     this->downList.push_back(l);
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> DU::get_upList()
+{
+    return this->upList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> DU::get_downList()
+{
+    return this->downList;
+}
+
+const std::vector<std::shared_ptr<LINK<NODE>>> DU::get_siblingList()
+{
+    return this->siblingList;
 }
 
 //ENDPOINT//
