@@ -205,3 +205,7 @@ void TestPrint()
     std::cout << "Number of CU-DU Links: " << cu_du << "\n";
     std::cout << "Number of ENDPOINT-CU Links: " << end << "\n";
 }
+
+void CreateSingleFirstPath() { // For basic testing
+    //std::shared_ptr<PATH> r = std::make_shared<RU>(i);
+}
