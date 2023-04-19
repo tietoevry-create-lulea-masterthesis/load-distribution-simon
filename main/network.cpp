@@ -208,9 +208,10 @@ void TestPrint()
 
 void CreateSingleFirstPath(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
+    CreateSingleFirstPathRecursive(p, 0, rate, allowedDelay);
 }
 
-void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel) { // For basic testing. Forward only
+void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
 
     int levelTotalNodes = 0;
 
@@ -243,7 +244,18 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
         auto list = container[i]->get_upList();
 
         for (int j = 0; j < cSize; ++j) {
-            //list[j]
+            auto con = list[j];
+
+            if (con->get_rate() >= rate && con->get_delay() <= allowedDelay) {
+                allowedDelay = allowedDelay - con->get_delay();
+
+                //Maintain path
+                p->addDelay(con->get_delay());
+                p->addLink(con);
+
+                CreateSingleFirstPathRecursive(p, (currentLevel+1), rate, allowedDelay);
+                
+            }
         }
     }
 }
