@@ -1,10 +1,13 @@
 #include <iostream>
 #include "components.h"
 
-NODE::NODE(){}
+NODE::NODE(){
+    this->connectedUEs = 0;
+}
 
 NODE::NODE(int id) {
     int i;
+    this->connectedUEs = 0;
 }
 
 const void NODE::set_id(int i) {
