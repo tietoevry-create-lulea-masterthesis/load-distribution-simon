@@ -18,3 +18,23 @@ template <typename T>
 const void LINK<T>::add_down(std::shared_ptr<T> down){
     this->down = down;
 }
+
+template <typename T>
+const int LINK<T>::get_rate() {
+    return this->rate;
+}
+
+template <typename T>
+const int LINK<T>::get_delay() {
+    return this->delay;
+}
+
+template <typename T>
+const std::shared_ptr<T> LINK<T>::get_upper() {
+    return this->up;
+}
+
+template <typename T>
+const std::shared_ptr<T> LINK<T>::get_lower() {
+    return this->down;
+}
