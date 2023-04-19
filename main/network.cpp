@@ -259,6 +259,7 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
 
                 CreateSingleFirstPathRecursive(p, (currentLevel+1), rate, allowedDelay);
                 
+                return;
             }
         }
     }
