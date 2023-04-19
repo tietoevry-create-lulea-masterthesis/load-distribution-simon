@@ -206,11 +206,6 @@ void TestPrint()
     std::cout << "Number of ENDPOINT-CU Links: " << end << "\n";
 }
 
-void CreateSingleFirstPath(int rate, int allowedDelay) {
-    std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    CreateSingleFirstPathRecursive(p, 0, rate, allowedDelay);
-}
-
 void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
 
     int levelTotalNodes = 0;
@@ -258,4 +253,9 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
             }
         }
     }
+}
+
+void CreateSingleFirstPath(int rate, int allowedDelay) {
+    std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
+    CreateSingleFirstPathRecursive(p, 0, rate, allowedDelay);
 }
