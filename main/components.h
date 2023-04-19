@@ -48,6 +48,7 @@ class NODE
         const std::vector<std::shared_ptr<LINK<NODE>>> get_siblingList();
         const std::vector<std::shared_ptr<LINK<NODE>>> get_upList();
         const std::vector<std::shared_ptr<LINK<NODE>>> get_downList();
+        const int get_UE();
 };
 
 class CU: public NODE

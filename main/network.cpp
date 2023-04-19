@@ -193,6 +193,8 @@ void TestPrint()
     int cu_du = CU_DU_List.size();
     int end = ENDPOINT_CU_List.size();
 
+    
+
     std::cout << "Number of RUs: " << rus << "\n";
     std::cout << "Number of DUs: " << dus << "\n";
     std::cout << "Number of CUs: " << cus << "\n";
@@ -204,6 +206,10 @@ void TestPrint()
     std::cout << "Number of DU-DU Links: " << du_du << "\n";
     std::cout << "Number of CU-DU Links: " << cu_du << "\n";
     std::cout << "Number of ENDPOINT-CU Links: " << end << "\n";
+
+    std::cout << "-------------------------------------\n";
+
+    std::cout << "Fully Connected UEs: " << endpoint->get_UE() << "\n";
 }
 
 void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only

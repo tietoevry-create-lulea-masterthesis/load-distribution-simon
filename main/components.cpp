@@ -48,6 +48,10 @@ const void NODE::add_UE() {
     ++this->connectedUEs;
 }
 
+const int NODE::get_UE() {
+    return this->connectedUEs;
+}
+
 // ============
 // RU Functions
 // ============
