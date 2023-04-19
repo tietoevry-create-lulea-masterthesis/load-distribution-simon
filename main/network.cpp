@@ -240,7 +240,7 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             return;    
     }
 
-
+    //PROBLEM WITH SOLUTION? Valid only for choosing the first RU? Investigate.
     for (int i = 0; i < levelTotalNodes; ++i) {
         int cSize = container[i]->get_upList().size();
         auto list = container[i]->get_upList();
@@ -272,6 +272,64 @@ void FirstValidConnection(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
     FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
 }
+
+// void NaiveWACRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int currentRate, int allowedDelay, int currentDelay) {
+//     int levelTotalNodes = 0;
+
+//     std::vector<std::shared_ptr<NODE>> container;
+
+//     switch (currentLevel) {
+//         case 0: //RU
+//             levelTotalNodes = RU_NUMBER;
+//             container = RUContainer;
+//             break;
+//         case 1: //DU
+//             levelTotalNodes = DU_NUMBER;
+//             container = DUContainer;
+//             break;
+//         case 2: //CU
+//             levelTotalNodes = CU_NUMBER;
+//             container = CUContainer;
+//             break;
+//         case 3: //ENDPOINT
+//             p->getNodes().back()->add_UE();
+//             p->setComplete();
+//             return;
+//         default:
+//             std::cout << "Something wrong with single path recursive";
+//             return;    
+//     }
+
+//     for (int i = 0; i < levelTotalNodes; ++i) {
+//         int cSize = container[i]->get_upList().size();
+//         auto list = container[i]->get_upList();
+
+//         for (int j = 0; j < cSize; ++j) {
+//             auto con = list[j];
+
+//             if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) { //Maybe just less than?
+
+//                 if (con->get_delay() <= allowedDelay && con->get_delay() >= currentDelay) {
+                    
+//                 }
+//                 // allowedDelay = allowedDelay - con->get_delay();
+
+//                 // //Maintain Link
+//                 // con->use_rate(rate);
+
+//                 // //Maintain Path
+//                 // p->addDelay(con->get_delay());
+//                 // p->addLink(con);
+//                 // p->addNode(con->get_lower());
+//                 // p->addNode(con->get_upper());
+
+//                 // FirstValidConnectionRecursive(p, (currentLevel+1), rate, allowedDelay);
+                
+//                 // return;
+//             }
+//         }
+//     }
+// }
 
 void PushRandomLoad(int UENumber)  { //Add choice of algorithm?
     for (int i = 0; i < UENumber; ++i) {
