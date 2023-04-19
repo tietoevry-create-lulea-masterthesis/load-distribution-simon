@@ -25,6 +25,8 @@ extern int main(int argc, char **argv)
 
     CreateRandomConnections();
 
+    CreateSingleFirstPath(10, 20);
+
     TestPrint();
 
     // Connects to database and inserts points for each RU and UE
