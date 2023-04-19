@@ -272,3 +272,9 @@ void CreateSingleFirstPath(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
     CreateSingleFirstPathRecursive(p, 0, rate, allowedDelay);
 }
+
+void PushRandomLoad(int UENumber)  { //Add choice of algorithm?
+    for (int i = 0; i < UENumber; ++i) {
+        CreateSingleFirstPath(CreateRandomRate(), CreateRandomDelay());
+    }
+}
