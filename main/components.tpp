@@ -20,6 +20,11 @@ const void LINK<T>::add_down(std::shared_ptr<T> down){
 }
 
 template <typename T>
+const void LINK<T>::use_rate(int rate){
+    this->rate = this->rate - rate;
+}
+
+template <typename T>
 const int LINK<T>::get_rate() {
     return this->rate;
 }

@@ -24,6 +24,7 @@ class LINK
 
         const void add_up(std::shared_ptr<T> up);
         const void add_down(std::shared_ptr<T> down);
+        const void use_rate(int rate);
 };
 
 class NODE

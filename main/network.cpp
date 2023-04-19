@@ -251,7 +251,10 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
             if (con->get_rate() >= rate && con->get_delay() <= allowedDelay) {
                 allowedDelay = allowedDelay - con->get_delay();
 
-                //Maintain path
+                //Maintain Link
+                con->use_rate(rate);
+
+                //Maintain Path
                 p->addDelay(con->get_delay());
                 p->addLink(con);
                 p->addNode(con->get_lower());
