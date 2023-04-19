@@ -16,6 +16,9 @@ class PATH
         const void addLink(std::shared_ptr<U> link);
         const void setComplete();
         const void addDelay(int delay);
+
+        const std::vector<std::shared_ptr<T>> getNodes();
+        const std::vector<std::shared_ptr<U>> getLinks();
 };
 
 #include "path.tpp"

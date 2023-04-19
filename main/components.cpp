@@ -41,6 +41,10 @@ const void NODE::add_down(std::shared_ptr<LINK<NODE>> l)
     this->downList.push_back(l);
 }
 
+const void NODE::add_UE() {
+    ++this->connectedUEs;
+}
+
 // ============
 // RU Functions
 // ============

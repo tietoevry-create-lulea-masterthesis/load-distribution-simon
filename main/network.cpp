@@ -226,6 +226,7 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
             container = CUContainer;
             break;
         case 3: //ENDPOINT
+            p->getNodes().back()->add_UE();
             p->setComplete();
             return;
         default:
