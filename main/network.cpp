@@ -212,7 +212,7 @@ void TestPrint()
     std::cout << "Fully Connected UEs: " << endpoint->get_UE() << "\n";
 }
 
-void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
+void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
 
     int levelTotalNodes = 0;
 
@@ -260,7 +260,7 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
                 p->addNode(con->get_lower());
                 p->addNode(con->get_upper());
 
-                CreateSingleFirstPathRecursive(p, (currentLevel+1), rate, allowedDelay);
+                FirstValidConnectionRecursive(p, (currentLevel+1), rate, allowedDelay);
                 
                 return;
             }
@@ -268,13 +268,13 @@ void CreateSingleFirstPathRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, in
     }
 }
 
-void CreateSingleFirstPath(int rate, int allowedDelay) {
+void FirstValidConnection(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    CreateSingleFirstPathRecursive(p, 0, rate, allowedDelay);
+    FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
 }
 
 void PushRandomLoad(int UENumber)  { //Add choice of algorithm?
     for (int i = 0; i < UENumber; ++i) {
-        CreateSingleFirstPath(CreateRandomRate(), CreateRandomDelay());
+        FirstValidConnection(CreateRandomRate(), CreateRandomDelay());
     }
 }
