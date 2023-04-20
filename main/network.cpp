@@ -232,18 +232,18 @@ std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NO
 }
 
 std::pair<bool, int> FirstValidConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rate, int allowedDelay, int currentLevel) {
-    for (int i = 0; i < RU_NUMBER; ++i) {
-        int cSize = RUContainer[i]->get_upList().size();
-        auto list = RUContainer[i]->get_upList();
+    int i = rand() % RU_NUMBER;
 
-        for (int j = 0; j < cSize; ++j) {
-            auto con = list[j];
+    int cSize = RUContainer[i]->get_upList().size();
+    auto list = RUContainer[i]->get_upList();
 
-            std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
+    for (int j = 0; j < cSize; ++j) {
+        auto con = list[j];
 
-            if (res.first) {
-                return res;
-            }
+        std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
+
+        if (res.first) {
+            return res;
         }
     }
 
@@ -376,6 +376,27 @@ void FirstValidConnection(int rate, int allowedDelay) {
 //         }
 //     }
 // }
+
+void WACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel) {
+
+    switch (currentLevel)
+    {
+        case 0:
+            //RU SETUP
+            break;
+        case 1:
+            //DU SETUP
+            break;
+        case 2:
+            //CU SETUP
+            break;
+        case 3:
+            //ENDPOINT
+        default:
+            break;
+}
+
+}
 
 void PushRandomLoad(int UENumber)  { //Add choice of algorithm?
     for (int i = 0; i < UENumber; ++i) {
