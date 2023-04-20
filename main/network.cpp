@@ -362,7 +362,7 @@ std::pair<bool, int> NaiveWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>>
 
     auto list = RUContainer[i]->get_upList();
     
-    return NaiveWACConnection(p, list, rateRequirement, delayRequirement)
+    return NaiveWACConnection(p, list, rateRequirement, delayRequirement);
 }
 
 std::pair<bool, int> NaiveWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
