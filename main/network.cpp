@@ -212,42 +212,7 @@ void TestPrint()
     std::cout << "Fully Connected UEs: " << endpoint->get_UE() << "\n";
 }
 
-void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
-
-    int levelTotalNodes = 0;
-
-    std::vector<std::shared_ptr<NODE>> container;
-
-    switch (currentLevel) {
-        case 0: //RU
-            levelTotalNodes = RU_NUMBER;
-            container = RUContainer;
-            break;
-        case 1: //DU
-            levelTotalNodes = DU_NUMBER;
-            container = DUContainer;
-            break;
-        case 2: //CU
-            levelTotalNodes = CU_NUMBER;
-            container = CUContainer;
-            break;
-        case 3: //ENDPOINT
-            p->getNodes().back()->add_UE();
-            p->setComplete();
-            return;
-        default:
-            std::cout << "Something wrong with single path recursive";
-            return;    
-    }
-
-    //PROBLEM WITH SOLUTION? Valid only for choosing the first RU? Investigate.
-    for (int i = 0; i < levelTotalNodes; ++i) {
-        int cSize = container[i]->get_upList().size();
-        auto list = container[i]->get_upList();
-
-        for (int j = 0; j < cSize; ++j) {
-            auto con = list[j];
-
+std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<LINK<NODE>> con, int rate, int allowedDelay, int currentLevel) {
             if (con->get_rate() >= rate && con->get_delay() <= allowedDelay) {
                 allowedDelay = allowedDelay - con->get_delay();
 
@@ -259,12 +224,91 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
                 p->addLink(con);
                 p->addNode(con->get_lower());
                 p->addNode(con->get_upper());
-
-                FirstValidConnectionRecursive(p, (currentLevel+1), rate, allowedDelay);
                 
-                return;
+                return std::pair<bool, int>(true, allowedDelay);
+            } else {
+                return std::pair<bool, int>(false, allowedDelay);
+            }
+}
+
+std::pair<bool, int> FirstValidConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rate, int allowedDelay, int currentLevel) {
+    for (int i = 0; i < RU_NUMBER; ++i) {
+        int cSize = RUContainer[i]->get_upList().size();
+        auto list = RUContainer[i]->get_upList();
+
+        for (int j = 0; j < cSize; ++j) {
+            auto con = list[j];
+
+            std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
+
+            if (res.first) {
+                return res;
             }
         }
+    }
+
+    //No Connection found
+    return std::pair<bool, int>(false, allowedDelay);
+}
+
+//Nodes other than RU
+std::pair<bool, int> FirstValidConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rate, int allowedDelay, int currentLevel) {
+    int cSize = p->getNodes().back()->get_upList().size();
+    auto list = p->getNodes().back()->get_upList();
+   
+    for (int j = 0; j < cSize; ++j) {
+            auto con = list[j];
+
+            std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
+
+            if (res.first) {
+                return res;
+            }
+    }
+
+    //No Connection Found
+
+    return std::pair<bool, int>(false, allowedDelay);
+}
+
+void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
+
+    int levelTotalNodes = 0;
+
+    std::vector<std::shared_ptr<NODE>> container;
+
+    switch (currentLevel) {
+        case 0: //RU
+            std::pair<bool, int> res = FirstValidConnectionRU(p, rate, allowedDelay, currentLevel);
+            if (res.first) {
+                FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 1: //DU
+            std::pair<bool, int> res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
+            if (res.first) {
+                FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 2: //CU
+            std::pair<bool, int> res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
+            if (res.first) {
+                FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 3: //ENDPOINT
+            p->getNodes().back()->add_UE();
+            p->setComplete();
+            return;
+        default:
+            std::cout << "Something wrong with single path recursive";
+            return;    
     }
 }
 
