@@ -408,12 +408,25 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
         default:
             std::cout << "Something wrong with Naive WAC selection";
             return;
+    }
 }
 
+void NaiveWAC(int rate, int delay) {
+    std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
+    NaiveWACLevelSelect(p, 0, rate, delay);
 }
 
-void PushRandomLoad(int UENumber)  { //Add choice of algorithm?
+void PushRandomLoad(int UENumber, int algo)  {
     for (int i = 0; i < UENumber; ++i) {
-        FirstValidConnection(CreateRandomRate(), CreateRandomDelay());
+        switch (algo)
+        {
+        case 1:
+            FirstValidConnection(CreateRandomRate(), CreateRandomDelay());
+            break;
+        case 2:
+            NaiveWAC(CreateRandomRate(), CreateRandomDelay());
+        default:
+            break;
+        }
     }
 }
