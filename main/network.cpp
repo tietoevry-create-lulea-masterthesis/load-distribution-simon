@@ -222,7 +222,7 @@ std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NO
                 //Maintain Path
                 p->addDelay(con->get_delay());
                 p->addLink(con);
-                p->addNode(con->get_lower());
+                p->addNode(con->get_lower()); //Gets us duplicates :/
                 p->addNode(con->get_upper());
                 
                 return std::pair<bool, int>(true, allowedDelay);
@@ -319,81 +319,95 @@ void FirstValidConnection(int rate, int allowedDelay) {
     FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
 }
 
-// void NaiveWACRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int currentRate, int allowedDelay, int currentDelay) {
-//     int levelTotalNodes = 0;
+std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::vector<std::shared_ptr<LINK<NODE>>> connections, int rateRequirement, int delayRequirement) {
+    std::shared_ptr<LINK<NODE>> chosenConnection;
+    int currentRate = 999999;
+    int currentDelay = 0;
+    
+    for (int i = 0; i < connections.size(); ++i) {
 
-//     std::vector<std::shared_ptr<NODE>> container;
+        auto con = connections[i];
 
-//     switch (currentLevel) {
-//         case 0: //RU
-//             levelTotalNodes = RU_NUMBER;
-//             container = RUContainer;
-//             break;
-//         case 1: //DU
-//             levelTotalNodes = DU_NUMBER;
-//             container = DUContainer;
-//             break;
-//         case 2: //CU
-//             levelTotalNodes = CU_NUMBER;
-//             container = CUContainer;
-//             break;
-//         case 3: //ENDPOINT
-//             p->getNodes().back()->add_UE();
-//             p->setComplete();
-//             return;
-//         default:
-//             std::cout << "Something wrong with single path recursive";
-//             return;    
-//     }
+        if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
+            if (con->get_delay() <= delayRequirement && con->get_delay() >= currentDelay) {
+                currentDelay = con->get_delay();
+                currentRate = con->get_rate();
+                chosenConnection = con;
+            }
+        }
+    }
+    delayRequirement = delayRequirement - currentDelay;
 
-//     for (int i = 0; i < levelTotalNodes; ++i) {
-//         int cSize = container[i]->get_upList().size();
-//         auto list = container[i]->get_upList();
+    if (chosenConnection = nullptr) {
+        return std::pair<bool, int>(false, delayRequirement);
+    }
 
-//         for (int j = 0; j < cSize; ++j) {
-//             auto con = list[j];
+    //Maintain delay
+    delayRequirement = delayRequirement - currentDelay;
 
-//             if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) { //Maybe just less than?
+    //Maintain Links.
+    chosenConnection->use_rate(rateRequirement);
 
-//                 if (con->get_delay() <= allowedDelay && con->get_delay() >= currentDelay) {
-                    
-//                 }
-//                 // allowedDelay = allowedDelay - con->get_delay();
+    //Maintain Path
+    p->addDelay(currentDelay);
+    p->addLink(chosenConnection);
+    p->addNode(chosenConnection->get_lower());
+    p->addNode(chosenConnection->get_upper());
 
-//                 // //Maintain Link
-//                 // con->use_rate(rate);
+    return std::pair<bool, int>(true, delayRequirement);
+}
 
-//                 // //Maintain Path
-//                 // p->addDelay(con->get_delay());
-//                 // p->addLink(con);
-//                 // p->addNode(con->get_lower());
-//                 // p->addNode(con->get_upper());
+std::pair<bool, int> NaiveWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+    int i = rand() % RU_NUMBER;
 
-//                 // FirstValidConnectionRecursive(p, (currentLevel+1), rate, allowedDelay);
-                
-//                 // return;
-//             }
-//         }
-//     }
-// }
+    auto list = RUContainer[i]->get_upList();
+    
+    return NaiveWACConnection(p, list, rateRequirement, delayRequirement)
+}
 
-void WACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel) {
+std::pair<bool, int> NaiveWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+    auto list = p->getNodes().back()->get_upList();
+
+    return NaiveWACConnection(p, list, rateRequirement, delayRequirement);
+}
+
+void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
+
+    std::pair<bool, int> res;
 
     switch (currentLevel)
     {
         case 0:
-            //RU SETUP
+            res = NaiveWACConnectionRU(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
             break;
         case 1:
-            //DU SETUP
+            res = NaiveWACConnectionNODE(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
             break;
         case 2:
-            //CU SETUP
+            res = NaiveWACConnectionNODE(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
             break;
         case 3:
-            //ENDPOINT
+            p->getNodes().back()->add_UE();
+            p->setComplete();
+            return;
         default:
-            break;
+            std::cout << "Something wrong with Naive WAC selection";
+            return;
 }
 
 }

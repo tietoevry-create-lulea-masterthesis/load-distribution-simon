@@ -32,6 +32,12 @@ const void PATH<T,U>::addDelay(int delay)
 }
 
 template <typename T, typename U>
+const void PATH<T,U>::consumeDelay(int d)
+{
+    this->remainingDelay = (this->remainingDelay - d);
+}
+
+template <typename T, typename U>
 const std::vector<std::shared_ptr<T>> PATH<T,U>::getNodes()
 {
     return this->nodes;
@@ -43,3 +49,8 @@ const std::vector<std::shared_ptr<U>> PATH<T,U>::getLinks()
     return this->links;
 }
 
+template <typename T, typename U>
+const int PATH<T,U>::getRemainingDelay()
+{
+    return this->remainingDelay;
+}
