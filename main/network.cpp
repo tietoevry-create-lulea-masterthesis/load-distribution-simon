@@ -277,9 +277,11 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
 
     std::vector<std::shared_ptr<NODE>> container;
 
+    std::pair<bool, int> res;
+
     switch (currentLevel) {
         case 0: //RU
-            std::pair<bool, int> res = FirstValidConnectionRU(p, rate, allowedDelay, currentLevel);
+            res = FirstValidConnectionRU(p, rate, allowedDelay, currentLevel);
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
@@ -287,7 +289,7 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             }
             break;
         case 1: //DU
-            std::pair<bool, int> res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
+            res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
@@ -295,7 +297,7 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             }
             break;
         case 2: //CU
-            std::pair<bool, int> res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
+            res = FirstValidConnectionNODE(p, rate, allowedDelay, currentLevel);
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
