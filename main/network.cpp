@@ -320,7 +320,7 @@ void FirstValidConnection(int rate, int allowedDelay) {
 }
 
 std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::vector<std::shared_ptr<LINK<NODE>>> connections, int rateRequirement, int delayRequirement) {
-    std::shared_ptr<LINK<NODE>> chosenConnection;
+    std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
     int currentRate = 999999;
     int currentDelay = 0;
     
