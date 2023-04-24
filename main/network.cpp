@@ -139,7 +139,7 @@ void CreateEndpointConnections()
     for (int i = 0; i < CU_NUMBER; ++i) {
         std::shared_ptr<NODE> cu = CUContainer[i];
 
-        std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, 99999999, 0, endpoint, cu);
+        std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, 9999, 0, endpoint, cu);
 
         ENDPOINT_CU_List.push_back(l);
         endpoint->add_down(l);
