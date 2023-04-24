@@ -338,7 +338,7 @@ std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p
     }
     delayRequirement = delayRequirement - currentDelay;
 
-    if (chosenConnection = nullptr) {
+    if (chosenConnection == nullptr) {
         return std::pair<bool, int>(false, delayRequirement);
     }
 
