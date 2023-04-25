@@ -46,9 +46,25 @@ int CreateRandomRate()
     return rates[r_pos];
 }
 
+int CreateRandomRateLinks()
+{
+    std::vector<int> rates {1000, 2000, 3000, 4000, 5000};
+
+    int r_pos = std::rand() % rates.size();
+    return rates[r_pos];
+}
+
 int CreateRandomDelay()
 {
     std::vector<int> delays {1, 2, 3, 4, 5, 10, 20, 50, 100, 500};
+
+    int r_pos = std::rand() % delays.size();
+    return delays[r_pos];
+}
+
+int CreateRandomDelayLinks()
+{
+    std::vector<int> delays {1, 2, 3, 4, 5, 10};
 
     int r_pos = std::rand() % delays.size();
     return delays[r_pos];
@@ -58,8 +74,8 @@ void CreateRandomRU_RUConnections() //Should be okay
 {
     for (int i = 0; i < RU_NUMBER; ++i) {
         std::shared_ptr<NODE> ru = RUContainer[i];
-        int rate = CreateRandomRate();
-        int delay = CreateRandomDelay();
+        int rate = CreateRandomRateLinks();
+        int delay = CreateRandomDelayLinks();
         
         if (AdjacentExistsUp(RUContainer, i)) {
             if (GetRandomBool()) {
@@ -78,8 +94,8 @@ void CreateRandomDU_DUConnections()
 {
     for (int i = 0; i < DU_NUMBER; ++i) {
         std::shared_ptr<NODE> du = DUContainer[i];
-        int rate = CreateRandomRate();
-        int delay = CreateRandomDelay();
+        int rate = CreateRandomRateLinks();
+        int delay = CreateRandomDelayLinks();
         
         if (AdjacentExistsUp(DUContainer, i)) {
             if (GetRandomBool()) {
@@ -101,8 +117,8 @@ void CreateRandomDU_RUConnections()
             if (GetRandomBool()) {
                 std::shared_ptr<NODE> ru = RUContainer[i];
                 std::shared_ptr<NODE> du = DUContainer[j];
-                int rate = CreateRandomRate();
-                int delay = CreateRandomDelay();
+                int rate = CreateRandomRateLinks();
+                int delay = CreateRandomDelayLinks();
 
                 std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, du, ru);
 
@@ -121,8 +137,8 @@ void CreateRandomCU_DUConnections()
             if (GetRandomBool()) {
                 std::shared_ptr<NODE> du = DUContainer[i];
                 std::shared_ptr<NODE> cu = CUContainer[j];
-                int rate = CreateRandomRate();
-                int delay = CreateRandomDelay();
+                int rate = CreateRandomRateLinks();
+                int delay = CreateRandomDelayLinks();
 
                 std::shared_ptr<LINK<NODE>> l = std::make_shared<LINK<NODE>>(i, rate, delay, cu, du);
 
