@@ -25,7 +25,7 @@ extern int main(int argc, char **argv)
 
     CreateRandomConnections();
 
-    PushRandomLoad(100);
+    PushRandomLoad(100, 1);
 
     TestPrint();
 
