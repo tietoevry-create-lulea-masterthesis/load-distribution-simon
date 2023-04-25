@@ -5,6 +5,7 @@
 #include <random>
 #include <string>
 #include "path.h"
+#include <tuple>
 
 ///Containers
 //Nodes
@@ -228,6 +229,12 @@ void TestPrint()
     std::cout << "Fully Connected UEs: " << endpoint->get_UE() << "\n";
 }
 
+///////////////////////
+//                   //
+// First Valid Conn  //
+//                   //
+///////////////////////
+
 std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<LINK<NODE>> con, int rate, int allowedDelay, int currentLevel) {
             if (con->get_rate() >= rate && con->get_delay() <= allowedDelay) {
                 allowedDelay = allowedDelay - con->get_delay();
@@ -335,6 +342,12 @@ void FirstValidConnection(int rate, int allowedDelay) {
     FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
 }
 
+///////////////////////
+//                   //
+//    Naive WAC      //
+//                   //
+///////////////////////
+
 std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::vector<std::shared_ptr<LINK<NODE>>> connections, int rateRequirement, int delayRequirement) {
     std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
     int currentRate = 999999;
@@ -430,6 +443,123 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
 void NaiveWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
     NaiveWACLevelSelect(p, 0, rate, delay);
+}
+
+///////////////////////
+//                   //
+// PARAMETERIZED WAC //
+//                   //
+///////////////////////
+
+std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>> ParaWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<NODE> node, int rateRequirement, int delayRequirement) {
+    std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
+    int currentRate = 999999;
+    int currentDelay = 0;
+    int parallelCounter = 0;
+    auto connections = node->get_upList();
+    
+    for (int i = 0; i < connections.size(); ++i) {
+
+        auto con = connections[i];
+
+        if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
+            if (con->get_delay() <= delayRequirement && con->get_delay() >= currentDelay) {
+                currentDelay = con->get_delay();
+                currentRate = con->get_rate();
+                chosenConnection = con;
+            }
+        }
+    }
+
+    delayRequirement = delayRequirement - currentDelay;
+
+    if (chosenConnection == nullptr) {
+        return std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>>(false, );
+    }
+
+    //Maintain delay
+    delayRequirement = delayRequirement - currentDelay;
+
+    //Maintain Links.
+    chosenConnection->use_rate(rateRequirement);
+
+    //Maintain Path
+    //p->addDelay(currentDelay);
+    //p->addLink(chosenConnection);
+    //p->addNode(chosenConnection->get_lower());
+    //p->addNode(chosenConnection->get_upper());
+
+    //return std::pair<bool, int>(true, delayRequirement);
+}
+
+void PARAWAC(std::pair<bool, int> res, int limit) {
+    if (limit == 0) {
+        return;
+    }
+}
+
+std::pair<bool, int> ParaWACConnectionMaster() {
+    std::pair<bool, int> res;
+
+    PARAWAC(res, PARALLEL_NUMBER);
+}
+
+std::pair<bool, int> ParaWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+    auto node = p->getNodes().back();
+
+    return NaiveWACConnection(p, node, rateRequirement, delayRequirement);
+}
+
+std::pair<bool, int> ParaWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+    int i = rand() % RU_NUMBER;
+
+    auto node = RUContainer[i];
+    
+    return NaiveWACConnection(p, node, rateRequirement, delayRequirement);
+}
+
+void ParaWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
+        std::pair<bool, int> res;
+
+    switch (currentLevel)
+    {
+        case 0:
+            res = ParaWACConnectionRU(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 1:
+            res = ParaWACConnectionNODE(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 2:
+            res = ParaWACConnectionNODE(p, rateRequirement, delayRequirement);
+            if (res.first) {
+                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            } else {
+                return;
+            }
+            break;
+        case 3:
+            p->getNodes().back()->add_UE();
+            p->setComplete();
+            return;
+        default:
+            std::cout << "Something wrong with Naive WAC selection";
+            return;
+    }
+}
+
+void ParaWAC(int rate, int delay) {
+    std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
+    
 }
 
 void PushRandomLoad(int UENumber, int algo)  {

@@ -5,3 +5,5 @@
 #define DU_NUMBER 5
 #define CU_NUMBER 5
 #define UE_NUMBER 30
+#define PARALLEL true
+#define PARALLEL_NUMBER 5
