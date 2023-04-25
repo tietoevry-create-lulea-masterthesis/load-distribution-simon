@@ -492,10 +492,33 @@ std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>> ParaWACConnection(std::s
     //return std::pair<bool, int>(true, delayRequirement);
 }
 
-void PARAWAC(std::pair<bool, int> res, int limit) {
+void PARAWAC(std::pair<bool, int> res, std::shared_ptr<NODE> node, int limit, int rateRequirement, int delayRequirement) {
     if (limit == 0) {
         return;
     }
+
+    std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
+    int currentRate = 999999;
+    int currentDelay = 0;
+    int parallelCounter = 0;
+    auto connections = node->get_upList();
+    
+    for (int i = 0; i < connections.size(); ++i) { //Check current
+
+        auto con = connections[i];
+
+        if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
+            if (con->get_delay() <= delayRequirement && con->get_delay() >= currentDelay) {
+                currentDelay = con->get_delay();
+                currentRate = con->get_rate();
+                chosenConnection = con;
+            }
+        }
+    }
+
+    if (PARAWAC())
+
+
 }
 
 std::pair<bool, int> ParaWACConnectionMaster() {
