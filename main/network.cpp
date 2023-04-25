@@ -448,9 +448,9 @@ void PushRandomLoad(int UENumber, int algo)  {
 }
 
 //For testing
-void checkload() {
+void checkload(int algo) {
     for (int i = 0; i < 100; ++i) {
-        PushRandomLoad(i+1, 1);
+        PushRandomLoad(i+1, algo);
         std::cout << "[" << i+1 << "] - " << endpoint->get_UE() << "\n";
     }
 }
