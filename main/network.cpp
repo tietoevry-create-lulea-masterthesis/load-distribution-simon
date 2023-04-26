@@ -599,6 +599,8 @@ void SideWAC(int rate, int delay) {
 }
 
 void PushRandomLoad(int UENumber, int algo)  {
+    int x = 0;
+
     for (int i = 0; i < UENumber; ++i) {
         switch (algo)
         {
@@ -613,6 +615,9 @@ void PushRandomLoad(int UENumber, int algo)  {
             break;
         }
     }
+
+    x = x + 1;
+    std::cout << "\r" << (x/UENumber);
 }
 
 //For testing
