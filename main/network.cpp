@@ -440,6 +440,7 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
     }
 }
 
+
 void NaiveWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
     NaiveWACLevelSelect(p, 0, rate, delay);
@@ -451,13 +452,15 @@ void NaiveWAC(int rate, int delay) {
 //                   //
 ///////////////////////
 
-std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>> ParaWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<NODE> node, int rateRequirement, int delayRequirement) {
+std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<NODE> node, int rateRequirement, int delayRequirement) {
     std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
+    std::shared_ptr<LINK<NODE>> chosenSiblingConnection = nullptr;
     int currentRate = 999999;
     int currentDelay = 0;
-    int parallelCounter = 0;
+    
     auto connections = node->get_upList();
     
+    //Current nodes
     for (int i = 0; i < connections.size(); ++i) {
 
         auto con = connections[i];
@@ -471,10 +474,38 @@ std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>> ParaWACConnection(std::s
         }
     }
 
+    //Siblings
+    auto siblings = node->get_siblingList();
+
+    for (int n = 0; n < siblings.size(); ++n) {
+        std::vector<std::shared_ptr<LINK<NODE>>> sibUp;
+        std::shared_ptr<LINK<NODE>> sibCon = siblings[n];
+
+        if (siblings[n]->get_lower() == node) {
+            sibUp = siblings[n]->get_upper()->get_upList();
+        } else {
+            sibUp = siblings[n]->get_lower()->get_upList();
+        }
+
+
+        for (int i = 0; i < sibUp.size(); ++i) {
+
+            auto con = sibUp[i];
+
+            if (con->get_rate() >= rateRequirement && sibCon->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
+                if ((con->get_delay() + sibCon->get_delay()) <= delayRequirement && (con->get_delay() + sibCon->get_delay()) >= currentDelay) {
+                    currentDelay = con->get_delay() + sibCon->get_delay();
+                    currentRate = con->get_rate();
+                    chosenConnection = con;
+                }
+            }
+        }
+    }
+
     delayRequirement = delayRequirement - currentDelay;
 
     if (chosenConnection == nullptr) {
-        return std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>>(false, );
+        return std::pair<bool, int>(false, delayRequirement);
     }
 
     //Maintain delay
@@ -482,90 +513,72 @@ std::tuple<bool, int, int, std::shared_ptr<LINK<NODE>>> ParaWACConnection(std::s
 
     //Maintain Links.
     chosenConnection->use_rate(rateRequirement);
+    if(chosenSiblingConnection != nullptr) {
+        chosenSiblingConnection->use_rate(rateRequirement);
+    }
 
     //Maintain Path
-    //p->addDelay(currentDelay);
-    //p->addLink(chosenConnection);
-    //p->addNode(chosenConnection->get_lower());
-    //p->addNode(chosenConnection->get_upper());
-
-    //return std::pair<bool, int>(true, delayRequirement);
-}
-
-void PARAWAC(std::pair<bool, int> res, std::shared_ptr<NODE> node, int limit, int rateRequirement, int delayRequirement) {
-    if (limit == 0) {
-        return;
-    }
-
-    std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
-    int currentRate = 999999;
-    int currentDelay = 0;
-    int parallelCounter = 0;
-    auto connections = node->get_upList();
-    
-    for (int i = 0; i < connections.size(); ++i) { //Check current
-
-        auto con = connections[i];
-
-        if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
-            if (con->get_delay() <= delayRequirement && con->get_delay() >= currentDelay) {
-                currentDelay = con->get_delay();
-                currentRate = con->get_rate();
-                chosenConnection = con;
-            }
+    p->addDelay(currentDelay);
+    if(chosenSiblingConnection != nullptr) {
+        p->addLink(chosenConnection);
+        p->addLink(chosenSiblingConnection);
+        if (chosenSiblingConnection->get_lower() == node) {
+            p->addNode(chosenSiblingConnection->get_upper());
+            p->addNode(chosenSiblingConnection->get_lower());
+        } else {
+            p->addNode(chosenSiblingConnection->get_lower());
+            p->addNode(chosenSiblingConnection->get_upper());
         }
+        p->addNode(chosenConnection->get_upper());
+    } else {
+        p->addLink(chosenConnection);
+        p->addNode(chosenConnection->get_lower());
+        p->addNode(chosenConnection->get_upper());
     }
 
-    if (PARAWAC())
-
-
+    return std::pair<bool, int>(true, delayRequirement);
 }
 
-std::pair<bool, int> ParaWACConnectionMaster() {
-    std::pair<bool, int> res;
-
-    PARAWAC(res, PARALLEL_NUMBER);
-}
-
-std::pair<bool, int> ParaWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
-    auto node = p->getNodes().back();
-
-    return NaiveWACConnection(p, node, rateRequirement, delayRequirement);
-}
-
-std::pair<bool, int> ParaWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+std::pair<bool, int> SideWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
     int i = rand() % RU_NUMBER;
 
     auto node = RUContainer[i];
-    
-    return NaiveWACConnection(p, node, rateRequirement, delayRequirement);
+
+    return SideWACConnection(p, node, rateRequirement, delayRequirement);
 }
 
-void ParaWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
-        std::pair<bool, int> res;
+std::pair<bool, int> SideWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+    auto node = p->getNodes().back();
+
+    return SideWACConnection(p, node, rateRequirement, delayRequirement);
+}
+
+void SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
+
+    std::pair<bool, int> res;
 
     switch (currentLevel)
     {
         case 0:
-            res = ParaWACConnectionRU(p, rateRequirement, delayRequirement);
+            res = SideWACConnectionRU(p, rateRequirement, delayRequirement);
             if (res.first) {
-                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
                 return;
             }
             break;
         case 1:
-            res = ParaWACConnectionNODE(p, rateRequirement, delayRequirement);
+            res = SideWACConnectionNODE(p, rateRequirement, delayRequirement);
             if (res.first) {
-                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
                 return;
             }
             break;
         case 2:
-            res = ParaWACConnectionNODE(p, rateRequirement, delayRequirement);
+            res = SideWACConnectionNODE(p, rateRequirement, delayRequirement);
             if (res.first) {
-                ParaWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
                 return;
             }
@@ -580,9 +593,9 @@ void ParaWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLev
     }
 }
 
-void ParaWAC(int rate, int delay) {
+void SideWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    
+    SideWACLevelSelect(p, 0, rate, delay);
 }
 
 void PushRandomLoad(int UENumber, int algo)  {
@@ -594,6 +607,8 @@ void PushRandomLoad(int UENumber, int algo)  {
             break;
         case 2:
             NaiveWAC(CreateRandomRate(), CreateRandomDelay());
+        case 3:
+            SideWAC(CreateRandomRate(), CreateRandomDelay());
         default:
             break;
         }
