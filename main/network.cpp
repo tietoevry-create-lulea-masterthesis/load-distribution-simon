@@ -609,8 +609,10 @@ void PushRandomLoad(int UENumber, int algo)  {
             break;
         case 2:
             NaiveWAC(CreateRandomRate(), CreateRandomDelay());
+            break;
         case 3:
             SideWAC(CreateRandomRate(), CreateRandomDelay());
+            break;
         default:
             break;
         }
