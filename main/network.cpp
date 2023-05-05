@@ -6,6 +6,7 @@
 #include <string>
 #include "path.h"
 #include <tuple>
+#include <algorithm>
 
 ///Containers
 //Nodes
@@ -21,6 +22,10 @@ std::vector<std::shared_ptr<LINK<NODE>>> CU_DU_List;
 std::vector<std::shared_ptr<LINK<NODE>>> DU_DU_List;
 std::vector<std::shared_ptr<LINK<NODE>>> DU_RU_List;
 std::vector<std::shared_ptr<LINK<NODE>>> RU_RU_List;
+
+//Counters
+long comparisons = 0;
+long goodcomparisons = 0;
 
 bool GetRandomBool()
 {
@@ -226,6 +231,10 @@ void TestPrint()
 
     std::cout << "-------------------------------------\n";
 
+    std::cout << "Number of Comparisons: " << goodcomparisons << "\n";
+
+    std::cout << "-------------------------------------\n";
+
     std::cout << "Fully Connected UEs: " << endpoint->get_UE() << "\n";
 }
 
@@ -236,6 +245,12 @@ void TestPrint()
 ///////////////////////
 
 std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<LINK<NODE>> con, int rate, int allowedDelay, int currentLevel) {
+            auto b = p->getBannedLinks();
+
+            if(std::find(b.begin(), b.end(), con) != b.end()) {
+                return std::pair<bool, int>(false, allowedDelay);
+            }
+
             if (con->get_rate() >= rate && con->get_delay() <= allowedDelay) {
                 allowedDelay = allowedDelay - con->get_delay();
 
@@ -245,6 +260,7 @@ std::pair<bool, int> FirstValidConnectionCheck(std::shared_ptr<PATH<NODE,LINK<NO
                 //Maintain Path
                 p->addDelay(con->get_delay());
                 p->addLink(con);
+                p->addBannedLink(con);
                 p->addNode(con->get_lower()); //Gets us duplicates :/
                 p->addNode(con->get_upper());
                 
@@ -261,8 +277,8 @@ std::pair<bool, int> FirstValidConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>
     auto list = RUContainer[i]->get_upList();
 
     for (int j = 0; j < cSize; ++j) {
+        ++comparisons;
         auto con = list[j];
-
         std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
 
         if (res.first) {
@@ -280,6 +296,7 @@ std::pair<bool, int> FirstValidConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NOD
     auto list = p->getNodes().back()->get_upList();
    
     for (int j = 0; j < cSize; ++j) {
+            ++comparisons;
             auto con = list[j];
 
             std::pair<bool, int> res = FirstValidConnectionCheck(p, con, rate, allowedDelay, currentLevel);
@@ -294,7 +311,7 @@ std::pair<bool, int> FirstValidConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NOD
     return std::pair<bool, int>(false, allowedDelay);
 }
 
-void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
+bool FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rate, int allowedDelay) { // For basic testing. Forward only
 
     int levelTotalNodes = 0;
 
@@ -308,7 +325,7 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 1: //DU
@@ -316,7 +333,8 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
-                return;
+                p->deleteWrongPath();
+                FirstValidConnectionRecursive(p, currentLevel-1, rate, res.second);
             }
             break;
         case 2: //CU
@@ -324,22 +342,24 @@ void FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             if (res.first) {
                 FirstValidConnectionRecursive(p, currentLevel+1, rate, res.second);
             } else {
-                return;
+                p->deleteWrongPath();
+                FirstValidConnectionRecursive(p, currentLevel-1, rate, res.second);
             }
             break;
         case 3: //ENDPOINT
             p->getNodes().back()->add_UE();
             p->setComplete();
-            return;
+            return true;
         default:
             std::cout << "Something wrong with single path recursive";
-            return;    
+            return false;    
     }
+    return false;
 }
 
-void FirstValidConnection(int rate, int allowedDelay) {
+bool FirstValidConnection(int rate, int allowedDelay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
+    return FirstValidConnectionRecursive(p, 0, rate, allowedDelay);
 }
 
 ///////////////////////
@@ -354,6 +374,7 @@ std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p
     int currentDelay = 0;
     
     for (int i = 0; i < connections.size(); ++i) {
+        ++comparisons;
 
         auto con = connections[i];
 
@@ -400,7 +421,7 @@ std::pair<bool, int> NaiveWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>
     return NaiveWACConnection(p, list, rateRequirement, delayRequirement);
 }
 
-void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
+bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
 
     std::pair<bool, int> res;
 
@@ -411,7 +432,7 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 1:
@@ -419,7 +440,7 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 2:
@@ -427,23 +448,24 @@ void NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 3:
             p->getNodes().back()->add_UE();
             p->setComplete();
-            return;
+            return true;
         default:
             std::cout << "Something wrong with Naive WAC selection";
-            return;
+            return false;
     }
+    return false;
 }
 
 
-void NaiveWAC(int rate, int delay) {
+bool NaiveWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    NaiveWACLevelSelect(p, 0, rate, delay);
+    return NaiveWACLevelSelect(p, 0, rate, delay);
 }
 
 ///////////////////////
@@ -462,6 +484,7 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
     
     //Current nodes
     for (int i = 0; i < connections.size(); ++i) {
+        ++comparisons;
 
         auto con = connections[i];
 
@@ -489,6 +512,7 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
 
 
         for (int i = 0; i < sibUp.size(); ++i) {
+            ++comparisons;
 
             auto con = sibUp[i];
 
@@ -553,7 +577,7 @@ std::pair<bool, int> SideWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>
     return SideWACConnection(p, node, rateRequirement, delayRequirement);
 }
 
-void SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
+bool SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
 
     std::pair<bool, int> res;
 
@@ -564,7 +588,7 @@ void SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLev
             if (res.first) {
                 SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 1:
@@ -572,7 +596,7 @@ void SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLev
             if (res.first) {
                 SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 2:
@@ -580,38 +604,60 @@ void SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLev
             if (res.first) {
                 SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return;
+                return false;
             }
             break;
         case 3:
             p->getNodes().back()->add_UE();
             p->setComplete();
-            return;
+            return true;
         default:
             std::cout << "Something wrong with Naive WAC selection";
-            return;
+            return false;
     }
+    return false;
 }
 
-void SideWAC(int rate, int delay) {
+bool SideWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    SideWACLevelSelect(p, 0, rate, delay);
+    return SideWACLevelSelect(p, 0, rate, delay);
 }
 
 void PushRandomLoad(int UENumber, int algo)  {
     int x = 0;
+    int earlyStop = 0;
+    int earlyStopLimit = 100000000;
+    goodcomparisons = 0;
 
     for (int i = 0; i < UENumber; ++i) {
+        comparisons = 0;
+        if (earlyStop == earlyStopLimit) {
+            return;
+        }
+
         switch (algo)
         {
         case 1:
-            FirstValidConnection(CreateRandomRate(), CreateRandomDelay());
+            if(FirstValidConnection(CreateRandomRate(), CreateRandomDelay())){
+                earlyStop = 0;
+                goodcomparisons = goodcomparisons + comparisons;
+            } else {
+                ++earlyStop;
+            }
             break;
         case 2:
-            NaiveWAC(CreateRandomRate(), CreateRandomDelay());
+            if(NaiveWAC(CreateRandomRate(), CreateRandomDelay())) {
+                earlyStop = 0;
+            } else {
+                ++earlyStop;
+            }
             break;
         case 3:
-            SideWAC(CreateRandomRate(), CreateRandomDelay());
+            if(SideWAC(CreateRandomRate(), CreateRandomDelay())) {
+                earlyStop = 0;
+            } else {
+                ++earlyStop;
+            }
             break;
         default:
             break;

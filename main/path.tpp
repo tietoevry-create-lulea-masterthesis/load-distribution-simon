@@ -20,6 +20,12 @@ const void PATH<T,U>::addLink(std::shared_ptr<U> link)
 }
 
 template <typename T, typename U>
+const void PATH<T,U>::addBannedLink(std::shared_ptr<U> link)
+{
+    this->bannedlinks.push_back(link);
+}
+
+template <typename T, typename U>
 const void PATH<T, U>::setComplete()
 {
     this->isComplete = true;
@@ -38,6 +44,14 @@ const void PATH<T,U>::consumeDelay(int d)
 }
 
 template <typename T, typename U>
+const void PATH<T,U>::deleteWrongPath()
+{
+    this->links.pop_back();
+    this->nodes.pop_back();
+    this->nodes.pop_back();
+}
+
+template <typename T, typename U>
 const std::vector<std::shared_ptr<T>> PATH<T,U>::getNodes()
 {
     return this->nodes;
@@ -47,6 +61,12 @@ template <typename T, typename U>
 const std::vector<std::shared_ptr<U>> PATH<T,U>::getLinks()
 {
     return this->links;
+}
+
+template <typename T, typename U>
+const std::vector<std::shared_ptr<U>> PATH<T,U>::getBannedLinks()
+{
+    return this->bannedlinks;
 }
 
 template <typename T, typename U>
