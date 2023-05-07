@@ -350,11 +350,11 @@ bool FirstValidConnectionRecursive(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int
             p->getNodes().back()->add_UE();
             p->setComplete();
             return true;
+            break;
         default:
             std::cout << "Something wrong with single path recursive";
             return false;    
     }
-    return false;
 }
 
 bool FirstValidConnection(int rate, int allowedDelay) {
@@ -374,9 +374,16 @@ std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p
     int currentDelay = 0;
     
     for (int i = 0; i < connections.size(); ++i) {
-        ++comparisons;
 
+        auto b = p->getBannedLinks();
+        
         auto con = connections[i];
+
+        if(std::find(b.begin(), b.end(), con) != b.end()) { //Check for banned link
+                return std::pair<bool, int>(false, delayRequirement);
+        }
+
+        ++comparisons;
 
         if (con->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
             if (con->get_delay() <= delayRequirement && con->get_delay() >= currentDelay) {
@@ -401,6 +408,7 @@ std::pair<bool, int> NaiveWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p
     //Maintain Path
     p->addDelay(currentDelay);
     p->addLink(chosenConnection);
+    p->addBannedLink(chosenConnection);
     p->addNode(chosenConnection->get_lower());
     p->addNode(chosenConnection->get_upper());
 
@@ -440,7 +448,8 @@ bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return false;
+                p->deleteWrongPath();
+                NaiveWACLevelSelect(p, currentLevel-1, rateRequirement, res.second);
             }
             break;
         case 2:
@@ -448,18 +457,19 @@ bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return false;
+                p->deleteWrongPath();
+                NaiveWACLevelSelect(p, currentLevel-1, rateRequirement, res.second);
             }
             break;
         case 3:
             p->getNodes().back()->add_UE();
             p->setComplete();
             return true;
+            break;
         default:
             std::cout << "Something wrong with Naive WAC selection";
             return false;
     }
-    return false;
 }
 
 
@@ -626,7 +636,7 @@ bool SideWAC(int rate, int delay) {
 void PushRandomLoad(int UENumber, int algo)  {
     int x = 0;
     int earlyStop = 0;
-    int earlyStopLimit = 100000000;
+    int earlyStopLimit = 10;
     goodcomparisons = 0;
 
     for (int i = 0; i < UENumber; ++i) {
@@ -648,6 +658,7 @@ void PushRandomLoad(int UENumber, int algo)  {
         case 2:
             if(NaiveWAC(CreateRandomRate(), CreateRandomDelay())) {
                 earlyStop = 0;
+                goodcomparisons = goodcomparisons + comparisons;
             } else {
                 ++earlyStop;
             }
