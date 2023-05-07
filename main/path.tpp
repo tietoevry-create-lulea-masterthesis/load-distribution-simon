@@ -52,6 +52,15 @@ const void PATH<T,U>::deleteWrongPath()
 }
 
 template <typename T, typename U>
+const void PATH<T,U>::deleteWrongPathSibling()
+{
+    this->links.pop_back();
+    this->links.pop_back();
+    this->nodes.pop_back();
+    this->nodes.pop_back();
+}
+
+template <typename T, typename U>
 const std::vector<std::shared_ptr<T>> PATH<T,U>::getNodes()
 {
     return this->nodes;

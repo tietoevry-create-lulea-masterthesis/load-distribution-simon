@@ -21,6 +21,7 @@ class PATH
         const void addDelay(int delay);
         const void consumeDelay(int d);
         const void deleteWrongPath();
+        const void deleteWrongPathSibling();
 
         const std::vector<std::shared_ptr<T>> getNodes();
         const std::vector<std::shared_ptr<U>> getLinks();
