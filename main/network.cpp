@@ -475,6 +475,7 @@ bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             r = false;
             return r;
     }
+    return r;
 }
 
 
