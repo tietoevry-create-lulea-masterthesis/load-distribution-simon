@@ -491,11 +491,14 @@ bool NaiveWAC(int rate, int delay) {
 //                   //
 ///////////////////////
 
-std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<NODE> node, int rateRequirement, int delayRequirement) {
+std::tuple<bool, int, bool> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, std::shared_ptr<NODE> node, int rateRequirement, int delayRequirement) {
     std::shared_ptr<LINK<NODE>> chosenConnection = nullptr;
     std::shared_ptr<LINK<NODE>> chosenSiblingConnection = nullptr;
     int currentRate = 999999;
     int currentDelay = 0;
+    bool hasSiblingConnection = false;
+
+    auto b = p->getBannedLinks();
     
     auto connections = node->get_upList();
     
@@ -529,9 +532,11 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
 
 
         for (int i = 0; i < sibUp.size(); ++i) {
-            ++comparisons;
+
 
             auto con = sibUp[i];
+
+            ++comparisons;
 
             if (con->get_rate() >= rateRequirement && sibCon->get_rate() >= rateRequirement && con->get_rate() <= currentRate) {
                 if ((con->get_delay() + sibCon->get_delay()) <= delayRequirement && (con->get_delay() + sibCon->get_delay()) >= currentDelay) {
@@ -546,7 +551,7 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
     delayRequirement = delayRequirement - currentDelay;
 
     if (chosenConnection == nullptr) {
-        return std::pair<bool, int>(false, delayRequirement);
+        return std::tuple<bool, int, bool>(false, delayRequirement, hasSiblingConnection);
     }
 
     //Maintain delay
@@ -556,6 +561,7 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
     chosenConnection->use_rate(rateRequirement);
     if(chosenSiblingConnection != nullptr) {
         chosenSiblingConnection->use_rate(rateRequirement);
+        hasSiblingConnection = true;
     }
 
     //Maintain Path
@@ -563,6 +569,7 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
     if(chosenSiblingConnection != nullptr) {
         p->addLink(chosenConnection);
         p->addLink(chosenSiblingConnection);
+        p->addBannedLink(chosenSiblingConnection);
         if (chosenSiblingConnection->get_lower() == node) {
             p->addNode(chosenSiblingConnection->get_upper());
             p->addNode(chosenSiblingConnection->get_lower());
@@ -573,14 +580,15 @@ std::pair<bool, int> SideWACConnection(std::shared_ptr<PATH<NODE,LINK<NODE>>> p,
         p->addNode(chosenConnection->get_upper());
     } else {
         p->addLink(chosenConnection);
+        p->addBannedLink(chosenConnection);
         p->addNode(chosenConnection->get_lower());
         p->addNode(chosenConnection->get_upper());
     }
 
-    return std::pair<bool, int>(true, delayRequirement);
+    return std::tuple<bool, int, bool>(true, delayRequirement, hasSiblingConnection);
 }
 
-std::pair<bool, int> SideWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+std::tuple<bool, int, bool> SideWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
     int i = rand() % RU_NUMBER;
 
     auto node = RUContainer[i];
@@ -588,7 +596,7 @@ std::pair<bool, int> SideWACConnectionRU(std::shared_ptr<PATH<NODE,LINK<NODE>>> 
     return SideWACConnection(p, node, rateRequirement, delayRequirement);
 }
 
-std::pair<bool, int> SideWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
+std::tuple<bool, int, bool> SideWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int rateRequirement, int delayRequirement) {
     auto node = p->getNodes().back();
 
     return SideWACConnection(p, node, rateRequirement, delayRequirement);
@@ -596,43 +604,61 @@ std::pair<bool, int> SideWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>>
 
 bool SideWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
 
-    std::pair<bool, int> res;
+    bool r = true;
+
+    std::tuple<bool, int, bool> res;
 
     switch (currentLevel)
     {
         case 0:
             res = SideWACConnectionRU(p, rateRequirement, delayRequirement);
-            if (res.first) {
-                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            if (std::get<0>(res)) {
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, std::get<1>(res));
             } else {
-                return false;
+                r = false;
+                return r;
             }
             break;
         case 1:
             res = SideWACConnectionNODE(p, rateRequirement, delayRequirement);
-            if (res.first) {
-                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            if (std::get<0>(res)) {
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, std::get<1>(res));
             } else {
-                return false;
+                if(std::get<2>(res)) {
+                    p->deleteWrongPathSibling();
+                    SideWACLevelSelect(p, currentLevel-1, rateRequirement, std::get<1>(res));
+                } else {
+                    p->deleteWrongPath();
+                    SideWACLevelSelect(p, currentLevel-1, rateRequirement, std::get<1>(res));
+                }
             }
             break;
         case 2:
             res = SideWACConnectionNODE(p, rateRequirement, delayRequirement);
-            if (res.first) {
-                SideWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
+            if (std::get<0>(res)) {
+                SideWACLevelSelect(p, currentLevel+1, rateRequirement, std::get<1>(res));
             } else {
-                return false;
+                if(std::get<2>(res)) {
+                    p->deleteWrongPathSibling();
+                    SideWACLevelSelect(p, currentLevel-1, rateRequirement, std::get<1>(res));
+                } else {
+                    p->deleteWrongPath();
+                    SideWACLevelSelect(p, currentLevel-1, rateRequirement, std::get<1>(res));
+                }
             }
             break;
         case 3:
             p->getNodes().back()->add_UE();
             p->setComplete();
-            return true;
+            r = true;
+            return r;
+            break;
         default:
             std::cout << "Something wrong with Naive WAC selection";
-            return false;
+            r = false;
+            return r;
     }
-    return false;
+    return r;
 }
 
 bool SideWAC(int rate, int delay) {
