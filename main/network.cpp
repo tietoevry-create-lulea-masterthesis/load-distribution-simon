@@ -699,6 +699,7 @@ void PushRandomLoad(int UENumber, int algo)  {
         case 3:
             if(SideWAC(CreateRandomRate(), CreateRandomDelay())) {
                 earlyStop = 0;
+                goodcomparisons = goodcomparisons + comparisons;
             } else {
                 ++earlyStop;
             }
