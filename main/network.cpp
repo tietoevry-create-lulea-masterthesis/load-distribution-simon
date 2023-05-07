@@ -431,6 +431,8 @@ std::pair<bool, int> NaiveWACConnectionNODE(std::shared_ptr<PATH<NODE,LINK<NODE>
 
 bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLevel, int rateRequirement, int delayRequirement) {
 
+    bool r = true;
+
     std::pair<bool, int> res;
 
     switch (currentLevel)
@@ -440,7 +442,8 @@ bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
             if (res.first) {
                 NaiveWACLevelSelect(p, currentLevel+1, rateRequirement, res.second);
             } else {
-                return false;
+                r = false;
+                return r;
             }
             break;
         case 1:
@@ -464,18 +467,21 @@ bool NaiveWACLevelSelect(std::shared_ptr<PATH<NODE,LINK<NODE>>> p, int currentLe
         case 3:
             p->getNodes().back()->add_UE();
             p->setComplete();
-            return true;
+            r = true;
+            return r;
             break;
         default:
             std::cout << "Something wrong with Naive WAC selection";
-            return false;
+            r = false;
+            return r;
     }
 }
 
 
 bool NaiveWAC(int rate, int delay) {
     std::shared_ptr<PATH<NODE,LINK<NODE>>> p = std::make_shared<PATH<NODE,LINK<NODE>>>();
-    return NaiveWACLevelSelect(p, 0, rate, delay);
+    bool r = NaiveWACLevelSelect(p, 0, rate, delay);
+    return r;
 }
 
 ///////////////////////
